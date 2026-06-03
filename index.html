@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MundialMap Posadas</title>
+    <title>MundialMap Posadas by Apex Tech</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -83,7 +83,6 @@
             max-width: 90vw;
         }
 
-        /* Ocultar scrollbar en móvil pero mantener funcionalidad */
         .nav-filters::-webkit-scrollbar {
             display: none;
         }
@@ -104,6 +103,8 @@
             color: #95a5a6; 
             transition: all 0.2s ease;
             white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
         }
 
         .btn-filter:hover { 
@@ -114,6 +115,17 @@
             background-color: var(--green); 
             color: white; 
             border-color: var(--green); 
+        }
+
+        /* Botón especial de contacto comercial */
+        .btn-contact {
+            background-color: transparent;
+            color: var(--blue);
+            border-color: var(--blue);
+            text-decoration: none;
+        }
+        .btn-contact:hover {
+            background-color: rgba(52, 152, 219, 0.1);
         }
         
         #map { 
@@ -186,6 +198,43 @@
             line-height: 24px;
             font-size: 14px;
         }
+
+        /* Estilos del Sello Apex Tech */
+        .powered-by {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            color: #95a5a6;
+            padding: 10px 15px;
+            border-radius: 12px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 11px;
+            text-decoration: none;
+            z-index: 1000;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+            text-align: right;
+            box-shadow: var(--shadow);
+        }
+        .powered-by strong {
+            color: white;
+            font-size: 13px;
+            letter-spacing: 0.5px;
+        }
+        .powered-by:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+            border-color: var(--blue);
+        }
+        .legal-text {
+            font-size: 8.5px;
+            margin-top: 4px;
+            color: #7f8c8d;
+            font-family: 'Roboto', sans-serif;
+        }
     </style>
 </head>
 <body>
@@ -195,12 +244,22 @@
         <p>Dónde ver los partidos en Posadas</p>
     </header>
 
+    <!-- Marca de Agua de Empresa -->
+    <a href="#" class="powered-by">
+        ⚡ Powered by <strong>Apex Tech</strong>
+        <div class="legal-text">© 2026 Interfaz protegida.<br>Registro DNDA en trámite.</div>
+    </a>
+
     <div class="nav-filters">
         <button class="btn-filter active" data-cat="all">Todos</button>
         <button class="btn-filter" data-cat="pantalla">Pantalla Grande</button>
         <button class="btn-filter" data-cat="birra">Cerveza</button>
         <button class="btn-filter" data-cat="costa">Costanera</button>
         <button class="btn-filter" data-cat="centro">Centro</button>
+        <!-- Botón de Contacto Comercial para dueños de locales -->
+        <a href="https://wa.me/549376XXXXXXX?text=Hola!%20Quiero%20sumar%20mi%20local%20al%20MundialMap" target="_blank" class="btn-filter btn-contact">
+            💼 Sumar mi Local
+        </a>
     </div>
 
     <div id="map"></div>
@@ -210,7 +269,7 @@
             zoomControl: false 
         }).setView([-27.364, -55.892], 14);
 
-        L.control.zoom({ position: 'topright' }).addTo(map);
+        L.control.zoom({ position: 'bottomleft' }).addTo(map);
 
         L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
             maxZoom: 19,
@@ -281,6 +340,70 @@
                 desc: "Pantalla de la Muni. Llevate el sillón, el mate y listo.",
                 categories: ["pantalla", "costa"],
                 tags: ["Al aire libre", "Gratis"]
+            },
+            {
+                name: "Holy Cervecería",
+                address: "Coronel Álvarez y Av. Roque Pérez",
+                coords: [-27.3585, -55.8950],
+                desc: "Lindo spot en Villa Sarita. Tienen buenas teles, pizzas excelentes y cervezas de la casa.",
+                categories: ["birra", "centro"],
+                tags: ["Villa Sarita", "Pizzas", "Teles"]
+            },
+            {
+                name: "Itacuá",
+                address: "Av. Costanera (frente al Brete)",
+                coords: [-27.3550, -55.8870],
+                desc: "Comida más elaborada y tragos. Ideal si querés ver el partido cenando algo distinto mirando el río.",
+                categories: ["costa"],
+                tags: ["Cena", "Tragos", "Río"]
+            },
+            {
+                name: "Café Colón",
+                address: "Colón y San Martín",
+                coords: [-27.3680, -55.8945],
+                desc: "Cafetería tradicional frente a la plaza. Siempre prenden las teles para los partidos, ideal para un café o tostado.",
+                categories: ["centro", "pantalla"],
+                tags: ["Plaza San Martín", "Café", "Tranqui"]
+            },
+            {
+                name: "Pizzería Los Pinos",
+                address: "San Lorenzo y Bolívar",
+                coords: [-27.3690, -55.8940],
+                desc: "Clásico posadeño. Para ver el partido comiendo una muzzarella de parado o en las mesas de adentro.",
+                categories: ["centro"],
+                tags: ["Pizza al molde", "Familiar"]
+            },
+            {
+                name: "Código Cerveza",
+                address: "Rivadavia 1445",
+                coords: [-27.3645, -55.8980],
+                desc: "Buena variedad de pintas y ambiente oscuro tipo pub. Tienen pantallas en casi todos los ángulos.",
+                categories: ["birra", "centro"],
+                tags: ["Pub", "Pintas"]
+            },
+            {
+                name: "Generación Y (GY)",
+                address: "Av. Costanera (Frente al monumento Papa)",
+                coords: [-27.3620, -55.8900],
+                desc: "Mucha onda y movimiento. Pasan los partidos y la comida acompaña re bien.",
+                categories: ["costa", "birra"],
+                tags: ["Joven", "Tragos"]
+            },
+            {
+                name: "Mentecato",
+                address: "San Lorenzo 1971",
+                coords: [-27.3655, -55.8910],
+                desc: "Un clásico de siempre en el centro. Clave para ir con amigos, pedir algo para picar y gritar los goles.",
+                categories: ["centro", "birra"],
+                tags: ["Clásico", "Picadas"]
+            },
+            {
+                name: "Zoco",
+                address: "Rioja 2239",
+                coords: [-27.3635, -55.8975],
+                desc: "Lugar más íntimo y con mucha onda. Buenas tapas, vinito y teles para no perderse nada.",
+                categories: ["centro"],
+                tags: ["Tapas", "Íntimo"]
             }
         ];
 
@@ -314,9 +437,10 @@
 
         renderMap('all');
 
-        document.querySelectorAll('.btn-filter').forEach(btn => {
+        // Lógica de botones JS para evitar interferir con el enlace de WhatsApp
+        document.querySelectorAll('button.btn-filter').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                document.querySelectorAll('.btn-filter').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('button.btn-filter').forEach(b => b.classList.remove('active'));
                 const target = e.target;
                 target.classList.add('active');
                 renderMap(target.dataset.cat);
