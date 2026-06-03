@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MundialMap Posadas</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+    <style>
+        :root {
+            --bg-dark: #0d0f12;
+            --glass: rgba(26, 32, 44, 0.65);
+            --blue: #3498db;
+            --green: #2ecc71;
+            --text-light: #ecf0f1;
+            --shadow: 0 10px 30px rgba(0,0,0,0.3);
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        body { 
+            margin: 0; 
+            font-family: 'Roboto', sans-serif; 
+            display: flex; 
+            flex-direction: column; 
+            height: 100vh; 
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            overflow: hidden;
+        }
+
+        header { 
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            color: white; 
+            padding: 1rem 1.5rem; 
+            border-radius: 15px;
+            box-shadow: var(--shadow); 
+            z-index: 1001; 
+            border: 1px solid var(--border);
+            max-width: fit-content;
+        }
+        header h1 { 
+            margin: 0; 
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            font-size: 1.4rem; 
+        }
+        header p { 
+            margin: 4px 0 0 0; 
+            font-size: 0.85rem; 
+            color: #b0c4de; 
+        }
+        
+        .nav-filters {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 10px 15px;
+            border-radius: 30px;
+            box-shadow: var(--shadow); 
+            z-index: 1000; 
+            border: 1px solid var(--border);
+            display: flex;
+            gap: 8px;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            width: max-content;
+            max-width: 90vw;
+        }
+
+        /* Ocultar scrollbar en móvil pero mantener funcionalidad */
+        .nav-filters::-webkit-scrollbar {
+            display: none;
+        }
+        .nav-filters {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .btn-filter { 
+            padding: 8px 16px; 
+            border: 1px solid #3d4653; 
+            border-radius: 20px; 
+            background-color: transparent; 
+            cursor: pointer; 
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600; 
+            font-size: 0.85rem;
+            color: #95a5a6; 
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .btn-filter:hover { 
+            background-color: rgba(255,255,255,0.05);
+        }
+
+        .btn-filter.active { 
+            background-color: var(--green); 
+            color: white; 
+            border-color: var(--green); 
+        }
+        
+        #map { 
+            flex-grow: 1; 
+            width: 100%; 
+            z-index: 1; 
+        }
+
+        .leaflet-bar {
+            border: none !important;
+            box-shadow: var(--shadow) !important;
+        }
+        .leaflet-bar a {
+            background-color: var(--glass) !important;
+            color: var(--text-light) !important;
+            border-bottom: 1px solid var(--border) !important;
+            backdrop-filter: blur(5px) !important;
+        }
+        
+        .leaflet-popup-content-wrapper {
+            background: rgba(13, 15, 18, 0.95);
+            backdrop-filter: blur(8px);
+            color: var(--text-light);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+        .leaflet-popup-tip {
+            background: rgba(13, 15, 18, 0.95);
+        }
+        
+        .place-info {
+            padding: 2px;
+        }
+        .place-info h3 { 
+            margin: 0 0 4px 0; 
+            font-family: 'Poppins', sans-serif;
+            color: white; 
+            font-size: 1.1rem; 
+        }
+        .place-info .address { 
+            font-size: 11px; 
+            color: #7f8c8d; 
+            margin-bottom: 8px; 
+        }
+        .place-info p { 
+            margin: 0 0 12px 0; 
+            font-size: 13px; 
+            line-height: 1.4;
+            color: #b0c4de; 
+        }
+        
+        .tag { 
+            display: inline-block; 
+            background: rgba(46, 204, 113, 0.1); 
+            color: var(--green); 
+            padding: 4px 8px; 
+            border-radius: 12px; 
+            font-size: 10px; 
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600; 
+            margin: 0 4px 4px 0; 
+            border: 1px solid rgba(46, 204, 113, 0.2);
+        }
+
+        .map-marker {
+            background-color: var(--bg-dark);
+            border: 2px solid var(--blue);
+            border-radius: 50%;
+            text-align: center;
+            line-height: 24px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>MundialMap</h1>
+        <p>Dónde ver los partidos en Posadas</p>
+    </header>
+
+    <div class="nav-filters">
+        <button class="btn-filter active" data-cat="all">Todos</button>
+        <button class="btn-filter" data-cat="pantalla">Pantalla Grande</button>
+        <button class="btn-filter" data-cat="birra">Cerveza</button>
+        <button class="btn-filter" data-cat="costa">Costanera</button>
+        <button class="btn-filter" data-cat="centro">Centro</button>
+    </div>
+
+    <div id="map"></div>
+
+    <script>
+        const map = L.map('map', {
+            zoomControl: false 
+        }).setView([-27.364, -55.892], 14);
+
+        L.control.zoom({ position: 'topright' }).addTo(map);
+
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+
+        const customMarker = L.divIcon({
+            className: 'map-marker',
+            html: '⚽',
+            iconSize: [28, 28],
+            iconAnchor: [14, 28],
+            popupAnchor: [0, -30]
+        });
+
+        const places = [
+            {
+                name: "Hotel Continental",
+                address: "Bolívar 1879, Piso 12",
+                coords: [-27.3653, -55.8953],
+                desc: "Ideal para verlo tranqui desde arriba. Tienen buena pantalla y menú armado. Clave reservar antes.",
+                categories: ["pantalla", "centro"],
+                tags: ["Rooftop", "Pantalla gigante", "Reservas"]
+            },
+            {
+                name: "Cachalote",
+                address: "Av. Costanera (frente al río)",
+                coords: [-27.3600, -55.8895],
+                desc: "Mucha movida en la terraza. Clásico para estar al aire libre con buena birra.",
+                categories: ["birra", "costa"],
+                tags: ["Terraza", "Artesanal", "Vista al río"]
+            },
+            {
+                name: "Antares",
+                address: "Av. Costanera (Obispo Kemerer)",
+                coords: [-27.3592, -55.8885],
+                desc: "El clásico de la costa. Si llegás temprano enganchás buen lugar en la terraza.",
+                categories: ["birra", "costa"],
+                tags: ["Terraza", "Pintas"]
+            },
+            {
+                name: "Glück",
+                address: "Coronel López 2002 (4to Tramo)",
+                coords: [-27.3615, -55.8905],
+                desc: "Se pone lindo. Mesas grandes para ir en grupo, buenas hamburguesas y pantalla.",
+                categories: ["birra", "costa", "pantalla"],
+                tags: ["4to Tramo", "Comida", "Grupos"]
+            },
+            {
+                name: "Refugio Patagonia",
+                address: "Alfonso de Arrechea 811",
+                coords: [-27.3626, -55.8943],
+                desc: "Explota siempre. Si vas a la bajada del cerro a ver el partido, es acá.",
+                categories: ["birra", "costa"],
+                tags: ["Bajada del Cerro", "Promos"]
+            },
+            {
+                name: "La Casona",
+                address: "Junín 1931",
+                coords: [-27.3685, -55.8970],
+                desc: "Bien céntrico. Tiran el proyector adentro, safa bastante si hace frío o viento en la costa.",
+                categories: ["pantalla", "centro", "birra"],
+                tags: ["Proyector", "Adentro"]
+            },
+            {
+                name: "El Brete",
+                address: "Costanera y Av. Antártida Argentina",
+                coords: [-27.3562, -55.9080],
+                desc: "Pantalla de la Muni. Llevate el sillón, el mate y listo.",
+                categories: ["pantalla", "costa"],
+                tags: ["Al aire libre", "Gratis"]
+            }
+        ];
+
+        let activeMarkers = [];
+
+        function renderMap(filter) {
+            activeMarkers.forEach(m => map.removeLayer(m));
+            activeMarkers = [];
+
+            places.forEach(p => {
+                if (filter === 'all' || p.categories.includes(filter)) {
+                    const tagsHtml = p.tags.map(t => `<span class="tag">${t}</span>`).join('');
+                    
+                    const html = `
+                        <div class="place-info">
+                            <h3>${p.name}</h3>
+                            <div class="address">${p.address}</div>
+                            <p>${p.desc}</p>
+                            <div>${tagsHtml}</div>
+                        </div>
+                    `;
+
+                    const marker = L.marker(p.coords, {icon: customMarker})
+                        .bindPopup(html)
+                        .addTo(map);
+                    
+                    activeMarkers.push(marker);
+                }
+            });
+        }
+
+        renderMap('all');
+
+        document.querySelectorAll('.btn-filter').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.btn-filter').forEach(b => b.classList.remove('active'));
+                const target = e.target;
+                target.classList.add('active');
+                renderMap(target.dataset.cat);
+            });
+        });
+    </script>
+</body>
+</html>
