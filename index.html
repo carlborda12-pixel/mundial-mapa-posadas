@@ -2,7 +2,8 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- El viewport-fit=cover ayuda con las pantallas que tienen "notch" (la ceja de la cámara en los iPhone) -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>MundialMap Posadas by Apex Tech</title>
     
     <!-- Fuentes -->
@@ -29,18 +30,50 @@
             --border: rgba(255, 255, 255, 0.1);
         }
 
-        /* Prevenir zoom accidental en móviles */
-        body { 
-            margin: 0; 
-            font-family: 'Roboto', sans-serif; 
-            display: flex; 
-            flex-direction: column; 
-            height: 100vh; 
-            background-color: var(--bg-dark);
-            color: var(--text-light);
-            overflow: hidden;
-            touch-action: pan-x pan-y;
+        /* Reseteo para evitar que iOS agrande los botones o los toque */
+        button, a {
+            -webkit-appearance: none;
+            appearance: none;
+            -webkit-tap-highlight-color: transparent;
         }
+
+        body { 
+            margin: 0; font-family: 'Roboto', sans-serif; display: flex; flex-direction: column; 
+            height: 100vh; background-color: var(--bg-dark); color: var(--text-light);
+            overflow: hidden; touch-action: pan-x pan-y;
+        }
+
+        /* --- TICKER DE RESULTADOS EN VIVO --- */
+        .live-ticker {
+            position: fixed; top: 0; left: 0; width: 100%; height: 35px;
+            background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            z-index: 1005; display: flex; align-items: center;
+            border-bottom: 1px solid rgba(231, 76, 60, 0.4);
+            font-family: 'Roboto', sans-serif; font-size: 0.85rem; color: white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        .ticker-label {
+            background: linear-gradient(45deg, #c0392b, #e74c3c); color: white; font-family: 'Poppins', sans-serif; font-weight: 900;
+            padding: 0 15px; height: 100%; display: flex; align-items: center; z-index: 2;
+            box-shadow: 4px 0 15px rgba(0,0,0,0.8); letter-spacing: 0.5px;
+        }
+        .live-dot { 
+            height: 8px; width: 8px; background-color: white; border-radius: 50%; 
+            display: inline-block; animation: blink 1s infinite; margin-right: 8px; box-shadow: 0 0 8px white;
+        }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+        
+        .ticker-content { flex-grow: 1; overflow: hidden; white-space: nowrap; position: relative; }
+        .ticker-track {
+            display: inline-block; white-space: nowrap;
+            animation: scroll-ticker 25s linear infinite;
+        }
+        .ticker-track:hover { animation-play-state: paused; }
+        .ticker-item { margin-right: 50px; display: inline-flex; align-items: center; gap: 8px;}
+        .ticker-item strong { color: var(--green); font-size: 1rem; }
+        .event-hl { color: #b0c4de; font-size: 0.75rem; margin-left: 5px; font-weight: 300;}
+        
+        @keyframes scroll-ticker { 0% { transform: translateX(100vw); } 100% { transform: translateX(-100%); } }
 
         /* --- EFECTO TEMBLOR DE PANTALLA --- */
         .shake-screen { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both; }
@@ -116,7 +149,7 @@
 
         /* --- HEADER DEL MAPA --- */
         header { 
-            position: fixed; top: 20px; left: 20px;
+            position: fixed; top: 55px; left: 20px; 
             background: var(--glass); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
             color: white; padding: 1rem 1.5rem; border-radius: 15px;
             box-shadow: var(--shadow); z-index: 1001; border: 1px solid var(--border);
@@ -127,7 +160,7 @@
         
         /* --- BOTÓN GOL --- */
         .btn-gol {
-            position: fixed; top: 20px; right: 20px;
+            position: fixed; top: 55px; right: 20px; 
             background: linear-gradient(45deg, #e74c3c, #c0392b); color: white; border: none; padding: 12px 24px;
             font-size: 1.2rem; font-family: 'Poppins', sans-serif; font-weight: 900;
             border-radius: 30px; cursor: pointer; box-shadow: 0 0 15px rgba(231, 76, 60, 0.6);
@@ -157,7 +190,8 @@
             padding: 10px 15px; border-radius: 30px; box-shadow: var(--shadow); 
             z-index: 1000; border: 1px solid var(--border);
             display: flex; gap: 8px; flex-wrap: nowrap; overflow-x: auto;
-            width: max-content; max-width: 90vw; -ms-overflow-style: none; scrollbar-width: none;
+            width: max-content; max-width: 90vw; 
+            -webkit-overflow-scrolling: touch; scrollbar-width: none;
         }
         .nav-filters::-webkit-scrollbar { display: none; }
         
@@ -166,13 +200,14 @@
             background-color: transparent; cursor: pointer; font-family: 'Poppins', sans-serif;
             font-weight: 600; font-size: 0.85rem; color: #95a5a6; transition: all 0.2s ease;
             white-space: nowrap; display: inline-flex; align-items: center;
+            flex-shrink: 0; /* Previene que los botones se achichen en móviles */
         }
         .btn-filter.active { background-color: var(--green); color: white; border-color: var(--green); }
         .btn-contact { color: var(--blue); border-color: var(--blue); }
 
         /* --- MAPA Y POPUPS --- */
         #map { flex-grow: 1; width: 100%; z-index: 1; }
-        .leaflet-bar { border: none !important; box-shadow: var(--shadow) !important; }
+        .leaflet-bar { border: none !important; box-shadow: var(--shadow) !important; margin-top: 50px !important;}
         .leaflet-bar a { background-color: var(--glass) !important; color: var(--text-light) !important; border-bottom: 1px solid var(--border) !important; backdrop-filter: blur(5px) !important; }
         .leaflet-popup-content-wrapper { background: rgba(13, 15, 18, 0.95); backdrop-filter: blur(8px); color: var(--text-light); border-radius: 12px; border: 1px solid var(--border); }
         .leaflet-popup-tip { background: rgba(13, 15, 18, 0.95); }
@@ -198,53 +233,62 @@
         @keyframes wave { 0% { transform: rotate(-15deg); } 100% { transform: rotate(15deg); } }
 
         /* =========================================
-           📱 OPTIMIZACIÓN PARA MÓVILES (MEDIA QUERIES) 
+           📱 OPTIMIZACIÓN PARA MÓVILES
            ========================================= */
         @media (max-width: 768px) {
-            /* Pantalla de inicio más contenida */
             .hype-title { font-size: 2.2rem; }
             .splash-subtitle { font-size: 1rem; margin-bottom: 20px;}
             .time-box { min-width: 35px; padding: 6px 8px; }
             .time-box span:first-child { font-size: 1.2rem; }
 
-            /* Cabecera del Mapa Compacta */
+            /* Header reseteado en móviles para que no choque */
             header {
-                top: 10px; left: 10px;
-                padding: 0.7rem 1rem;
-                max-width: calc(100vw - 120px); /* Deja espacio para el botón GOL */
+                top: 45px; left: 10px; 
+                padding: 0.6rem 0.8rem;
+                max-width: calc(100vw - 110px); 
                 border-radius: 12px;
             }
-            header h1 { font-size: 1.1rem; }
-            header p { font-size: 0.75rem; margin-top: 2px;}
-            .header-countdown { transform: scale(0.85); margin-top: 8px; padding-top: 8px; }
+            header h1 { font-size: 1rem; }
+            header p { font-size: 0.7rem; margin-top: 2px;}
+            .header-countdown { transform: scale(0.8); margin-top: 6px; padding-top: 6px; }
 
-            /* Botón GOL compacto */
+            /* Botón Gol ajustado */
             .btn-gol {
-                top: 10px; right: 10px;
-                padding: 10px 15px;
-                font-size: 1rem;
-                border-radius: 20px;
+                top: 45px; right: 10px;
+                padding: 8px 14px; font-size: 0.95rem; border-radius: 20px;
             }
 
-            /* Sello Apex Tech (oculta el texto legal para no ensuciar) */
-            .powered-by {
-                bottom: 80px; right: 10px;
-                padding: 6px 12px;
-            }
+            /* Sello de Apex Tech reubicado para que no estorbe */
+            .powered-by { bottom: 75px; right: 10px; padding: 6px 12px; }
             .legal-text { display: none; }
 
-            /* Barra de filtros adaptada al pulgar */
+            /* Filtros posicionados perfectamente sin off-center issue */
             .nav-filters {
-                bottom: 20px;
-                width: 95vw;
-                padding: 8px 10px;
-                justify-content: flex-start; /* Para que el scroll empiece desde la izq */
+                bottom: 15px; left: 10px; transform: none; width: calc(100% - 20px);
+                padding: 8px; justify-content: flex-start;
+                box-sizing: border-box; /* Previene que el padding rompa el width */
             }
             .btn-filter { padding: 6px 12px; font-size: 0.8rem; }
+            
+            .ticker-item { font-size: 0.8rem; }
+            .event-hl { display: none; }
         }
     </style>
 </head>
 <body>
+
+    <!-- TICKER DE RESULTADOS EN VIVO -->
+    <div class="live-ticker">
+        <div class="ticker-label"><span class="live-dot"></span> EN VIVO</div>
+        <div class="ticker-content">
+            <div class="ticker-track">
+                <span class="ticker-item">🇦🇷 ARG <strong>2 - 0</strong> MEX 🇲🇽 <span class="event-hl">(⚽ 12' Messi, ⚽ 55' Garnacho, 🟥 61' Álvarez)</span></span>
+                <span class="ticker-item">🇧🇷 BRA <strong>1 - 1</strong> FRA 🇫🇷 <span class="event-hl">(⚽ 33' Mbappé, ⚽ 45+2' Vinicius)</span></span>
+                <span class="ticker-item">🏴󠁧󠁢󠁥󠁮󠁧󠁿 ENG <strong>0 - 0</strong> ESP 🇪🇸 <span class="event-hl">(Min 78')</span></span>
+                <span class="ticker-item">🇩🇪 GER <strong>3 - 1</strong> JPN 🇯🇵 <span class="event-hl">(FINALIZADO)</span></span>
+            </div>
+        </div>
+    </div>
 
     <!-- PANTALLA DE INICIO (SPLASH) -->
     <div id="splash-screen">
@@ -270,7 +314,7 @@
     <!-- CABECERA DEL MAPA -->
     <header>
         <h1>MundialMap</h1>
-        <p>Dónde ver el partido</p> <!-- Texto más corto para móvil -->
+        <p>Dónde ver el partido</p>
         
         <div class="countdown-container header-countdown">
             <div class="time-box"><span class="cd-days">00</span><span class="label">DÍAS</span></div>
@@ -283,8 +327,8 @@
     <!-- BOTÓN GOL -->
     <button class="btn-gol" onclick="explotarGol()">¡GOL! ⚽</button>
 
-    <!-- SELLO APEX TECH -->
-    <a href="#" class="powered-by">
+    <!-- SELLO APEX TECH CON LINK A INSTAGRAM -->
+    <a href="https://www.instagram.com/apex_sec/" target="_blank" rel="noopener noreferrer" class="powered-by">
         ⚡ Powered by <strong>Apex Tech</strong>
         <div class="legal-text">© 2026 Interfaz protegida.<br>Registro DNDA en trámite.</div>
     </a>
@@ -297,7 +341,7 @@
         <button class="btn-filter" data-cat="costa">Costanera</button>
         <button class="btn-filter" data-cat="centro">Centro</button>
         <a href="https://wa.me/549376XXXXXXX?text=Hola!%20Quiero%20sumar%20mi%20local%20al%20MundialMap" target="_blank" class="btn-filter btn-contact">
-            💼 Sumar mi Local
+            💼 Sumar Local
         </a>
     </div>
 
@@ -305,38 +349,24 @@
     <div id="map"></div>
 
     <script>
-        // Transición del Splash Screen
-        function entrarAlMapa() {
-            document.getElementById('splash-screen').classList.add('hidden');
-        }
+        function entrarAlMapa() { document.getElementById('splash-screen').classList.add('hidden'); }
 
-        // Lógica del GOL (Confeti y Temblor)
         function explotarGol() {
             document.body.classList.add('shake-screen');
             setTimeout(() => document.body.classList.remove('shake-screen'), 500);
-
             var duration = 3000;
             var end = Date.now() + duration;
-
             (function frame() {
-                confetti({
-                    particleCount: 7, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#ffffff', '#74acdf'], zIndex: 10000
-                });
-                confetti({
-                    particleCount: 7, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#ffffff', '#74acdf'], zIndex: 10000
-                });
-
+                confetti({ particleCount: 7, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#ffffff', '#74acdf'], zIndex: 10000 });
+                confetti({ particleCount: 7, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#ffffff', '#74acdf'], zIndex: 10000 });
                 if (Date.now() < end) { requestAnimationFrame(frame); }
             }());
         }
 
-        // Contador Regresivo para el 11 de Junio de 2026
         const countDownDate = new Date("Jun 11, 2026 12:00:00").getTime();
-
         const x = setInterval(function() {
             const now = new Date().getTime();
             const distance = countDownDate - now;
-
             const days = Math.floor(distance / (1000 * 60 * 60 * 24));
             const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
@@ -355,52 +385,19 @@
             }
         }, 1000);
 
-        // Mapa Leaflet
         const map = L.map('map', { zoomControl: false }).setView([-27.364, -55.892], 14);
-        // Removemos el control de zoom en móvil para ganar espacio (se puede pellizcar la pantalla)
         if(window.innerWidth > 768) { L.control.zoom({ position: 'bottomleft' }).addTo(map); }
 
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-            maxZoom: 19, attribution: '© OpenStreetMap'
-        }).addTo(map);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { maxZoom: 19, attribution: '© OpenStreetMap' }).addTo(map);
 
-        // Locales de Posadas
         const places = [
-            {
-                name: "Hotel Continental", address: "Bolívar 1879, Piso 12", coords: [-27.3653, -55.8953],
-                desc: "Ideal para verlo tranqui desde arriba. Tienen buena pantalla y menú armado. Clave reservar antes.",
-                categories: ["pantalla", "centro"], tags: ["Rooftop", "Pantalla gigante", "Reservas"], volumenAlto: false
-            },
-            {
-                name: "Cachalote", address: "Av. Costanera (frente al río)", coords: [-27.3600, -55.8895],
-                desc: "Mucha movida en la terraza. Clásico para estar al aire libre con buena birra y cantitos.",
-                categories: ["birra", "costa"], tags: ["Terraza", "Artesanal", "Vista al río"], volumenAlto: true
-            },
-            {
-                name: "Antares", address: "Av. Costanera (Obispo Kemerer)", coords: [-27.3592, -55.8885],
-                desc: "El clásico de la costa. Si llegás temprano enganchás buen lugar en la terraza.",
-                categories: ["birra", "costa"], tags: ["Terraza", "Pintas"], volumenAlto: false
-            },
-            {
-                name: "Glück", address: "Coronel López 2002 (4to Tramo)", coords: [-27.3615, -55.8905],
-                desc: "Se pone lindo. Mesas grandes para ir en grupo, buenas hamburguesas y pantalla. Volumen a tope.",
-                categories: ["birra", "costa", "pantalla"], tags: ["4to Tramo", "Comida"], volumenAlto: true
-            },
-            {
-                name: "Refugio Patagonia", address: "Alfonso de Arrechea 811", coords: [-27.3626, -55.8943],
-                desc: "Explota siempre. Si vas a la bajada del cerro a ver el partido, es acá. Clima de cancha total.",
-                categories: ["birra", "costa"], tags: ["Bajada del Cerro", "Promos"], volumenAlto: true
-            },
-            {
-                name: "La Casona", address: "Junín 1931", coords: [-27.3685, -55.8970],
-                desc: "Bien céntrico. Tiran el proyector adentro, safa bastante si hace frío o viento en la costa.",
-                categories: ["pantalla", "centro", "birra"], tags: ["Proyector", "Adentro"], volumenAlto: false
-            },
-            {
-                name: "El Brete", address: "Costanera y Av. Antártida Argentina", coords: [-27.3562, -55.9080],
-                desc: "Pantalla de la Muni. Llevate el sillón, el mate y preparate para gritar con todo el mundo.",
-                categories: ["pantalla", "costa"], tags: ["Al aire libre", "Gratis"], volumenAlto: true
-            }
+            { name: "Hotel Continental", address: "Bolívar 1879, Piso 12", coords: [-27.3653, -55.8953], desc: "Ideal para verlo tranqui desde arriba. Tienen buena pantalla y menú armado. Clave reservar antes.", categories: ["pantalla", "centro"], tags: ["Rooftop", "Pantalla gigante", "Reservas"], volumenAlto: false },
+            { name: "Cachalote", address: "Av. Costanera (frente al río)", coords: [-27.3600, -55.8895], desc: "Mucha movida en la terraza. Clásico para estar al aire libre con buena birra y cantitos.", categories: ["birra", "costa"], tags: ["Terraza", "Artesanal", "Vista al río"], volumenAlto: true },
+            { name: "Antares", address: "Av. Costanera (Obispo Kemerer)", coords: [-27.3592, -55.8885], desc: "El clásico de la costa. Si llegás temprano enganchás buen lugar en la terraza.", categories: ["birra", "costa"], tags: ["Terraza", "Pintas"], volumenAlto: false },
+            { name: "Glück", address: "Coronel López 2002 (4to Tramo)", coords: [-27.3615, -55.8905], desc: "Se pone lindo. Mesas grandes para ir en grupo, buenas hamburguesas y pantalla. Volumen a tope.", categories: ["birra", "costa", "pantalla"], tags: ["4to Tramo", "Comida"], volumenAlto: true },
+            { name: "Refugio Patagonia", address: "Alfonso de Arrechea 811", coords: [-27.3626, -55.8943], desc: "Explota siempre. Si vas a la bajada del cerro a ver el partido, es acá. Clima de cancha total.", categories: ["birra", "costa"], tags: ["Bajada del Cerro", "Promos"], volumenAlto: true },
+            { name: "La Casona", address: "Junín 1931", coords: [-27.3685, -55.8970], desc: "Bien céntrico. Tiran el proyector adentro, safa bastante si hace frío o viento en la costa.", categories: ["pantalla", "centro", "birra"], tags: ["Proyector", "Adentro"], volumenAlto: false },
+            { name: "El Brete", address: "Costanera y Av. Antártida Argentina", coords: [-27.3562, -55.9080], desc: "Pantalla de la Muni. Llevate el sillón, el mate y preparate para gritar con todo el mundo.", categories: ["pantalla", "costa"], tags: ["Al aire libre", "Gratis"], volumenAlto: true }
         ];
 
         let activeMarkers = [];
@@ -408,47 +405,23 @@
         function renderMap(filter) {
             activeMarkers.forEach(m => map.removeLayer(m));
             activeMarkers = [];
-
             places.forEach(p => {
                 if (filter === 'all' || p.categories.includes(filter)) {
-                    
                     let tagsHtml = p.tags.map(t => `<span class="tag">${t}</span>`).join('');
-                    
                     let nombreHtml = p.volumenAlto ? `${p.name} <span class="flag-anim">🇦🇷</span>` : p.name;
-                    if(p.volumenAlto) {
-                        tagsHtml += `<span class="tag tag-loud">🔊 Clima de Cancha</span>`;
-                    }
+                    if(p.volumenAlto) { tagsHtml += `<span class="tag tag-loud">🔊 Clima de Cancha</span>`; }
                     
-                    const html = `
-                        <div class="place-info">
-                            <h3>${nombreHtml}</h3>
-                            <div class="address">${p.address}</div>
-                            <p>${p.desc}</p>
-                            <div>${tagsHtml}</div>
-                        </div>
-                    `;
-
+                    const html = `<div class="place-info"><h3>${nombreHtml}</h3><div class="address">${p.address}</div><p>${p.desc}</p><div>${tagsHtml}</div></div>`;
                     const iconStyle = p.volumenAlto ? 'marker-loud' : 'map-marker';
-                    const icon = L.divIcon({
-                        className: iconStyle,
-                        html: '⚽',
-                        iconSize: [28, 28],
-                        iconAnchor: [14, 28],
-                        popupAnchor: [0, -30]
-                    });
+                    const icon = L.divIcon({ className: iconStyle, html: '⚽', iconSize: [28, 28], iconAnchor: [14, 28], popupAnchor: [0, -30] });
 
-                    const marker = L.marker(p.coords, {icon: icon})
-                        .bindPopup(html)
-                        .addTo(map);
-                    
+                    const marker = L.marker(p.coords, {icon: icon}).bindPopup(html).addTo(map);
                     activeMarkers.push(marker);
                 }
             });
         }
-
         renderMap('all');
 
-        // Botones de filtro
         document.querySelectorAll('button.btn-filter').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 document.querySelectorAll('button.btn-filter').forEach(b => b.classList.remove('active'));
