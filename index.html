@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>MundialMap Posadas by Apex Tech</title>
+    <title>MundialMap Posadas | By Apex Tech</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,24 +11,22 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <!-- Librería de Iconos Profesionales (Phosphor Icons) -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
-    <meta property="og:title" content="MundialMap Posadas 🇦🇷">
-    <meta property="og:description" content="Buscá dónde alentar a la Selección en Posadas. Pantallas gigantes, cerveza y el mejor clima de cancha. Powered by Apex Tech.">
+    <meta property="og:title" content="MundialMap Posadas">
+    <meta property="og:description" content="Plataforma oficial de geolocalización para vivir el Mundial. Desarrollado por Apex Tech.">
     <meta property="og:type" content="website">
 
     <style>
         :root {
             --bg-dark: #090c10; 
-            
-            /* --- EFECTO CRISTAL APPLE (RUIDO FRACTAL SVG) --- */
             --noise: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.08'/%3E%3C/svg%3E");
-            
             --glass-color: rgba(22, 27, 34, 0.65);
             --glass-darker: rgba(9, 12, 16, 0.85);
-            
             --glass-bg: var(--noise), linear-gradient(var(--glass-color), var(--glass-color));
             --glass-bg-dark: var(--noise), linear-gradient(var(--glass-darker), var(--glass-darker));
-
             --blue: #2980b9;
             --green: #27ae60;
             --arg-blue: #74acdf;
@@ -39,7 +37,7 @@
             --border-glow: rgba(255, 255, 255, 0.08);
         }
 
-        button, a { -webkit-appearance: none; appearance: none; -webkit-tap-highlight-color: transparent; }
+        button, a { -webkit-appearance: none; appearance: none; -webkit-tap-highlight-color: transparent; text-decoration: none;}
         body { margin: 0; font-family: 'Roboto', sans-serif; display: flex; flex-direction: column; height: 100vh; background-color: var(--bg-dark); color: var(--text-light); overflow: hidden; touch-action: pan-x pan-y; }
 
         /* --- TICKER EN VIVO --- */
@@ -47,19 +45,19 @@
             position: fixed; top: 0; left: 0; width: 100%; height: 32px;
             background: var(--glass-bg-dark);
             backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-            z-index: 1005; display: flex; align-items: center; border-bottom: 1px solid rgba(231, 76, 60, 0.3);
+            z-index: 1005; display: flex; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             font-size: 0.8rem; color: #c9d1d9; box-shadow: 0 2px 8px rgba(0,0,0,0.5);
         }
         .ticker-label {
-            background: linear-gradient(135deg, #c0392b, #e74c3c); color: white; font-family: 'Poppins', sans-serif; font-weight: 700;
-            padding: 0 12px; height: 100%; display: flex; align-items: center; z-index: 2;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.6); letter-spacing: 0.5px; white-space: nowrap; font-size: 0.75rem;
+            background: var(--blue); color: white; font-family: 'Poppins', sans-serif; font-weight: 600;
+            padding: 0 16px; height: 100%; display: flex; align-items: center; z-index: 2;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.4); letter-spacing: 0.5px; white-space: nowrap; font-size: 0.75rem; text-transform: uppercase;
         }
-        .live-dot { height: 6px; width: 6px; background-color: white; border-radius: 50%; display: inline-block; animation: blink 1.2s infinite; margin-right: 6px; box-shadow: 0 0 6px white; }
+        .live-dot { height: 6px; width: 6px; background-color: white; border-radius: 50%; display: inline-block; animation: blink 1.2s infinite; margin-right: 8px; box-shadow: 0 0 6px white; }
         @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.2; } 100% { opacity: 1; } }
         .ticker-content { flex-grow: 1; overflow: hidden; white-space: nowrap; position: relative; height: 100%; display: flex; align-items: center;}
         .ticker-track { display: inline-flex; align-items: center; white-space: nowrap; animation: scroll-ticker 35s linear infinite; }
-        .ticker-item { margin-right: 40px; display: inline-flex; align-items: center; gap: 6px;}
+        .ticker-item { margin-right: 40px; display: inline-flex; align-items: center; gap: 8px; font-family: 'Poppins', sans-serif; font-size: 0.75rem;}
         .ticker-item strong { color: var(--green); font-weight: 600; }
         .event-hl { color: var(--text-muted); font-size: 0.7rem; margin-left: 4px; font-weight: 400;}
         @keyframes scroll-ticker { 0% { transform: translateX(100vw); } 100% { transform: translateX(-100%); } }
@@ -84,17 +82,17 @@
         @keyframes pulse-bg { 0% { transform: scale(1); opacity: 0.4; } 100% { transform: scale(1.3); opacity: 0.8; } }
         .splash-content { text-align: center; padding: 20px; z-index: 10; width: 90%; display: flex; flex-direction: column; align-items: center; gap: 10px;}
         .hype-title {
-            font-family: 'Poppins', sans-serif; font-size: 3.2rem; font-weight: 900; margin: 0; color: white; text-transform: uppercase;
-            text-shadow: 0 0 15px rgba(116, 172, 223, 0.5), 0 0 30px rgba(116, 172, 223, 0.3); animation: text-pulse 2.5s infinite alternate; line-height: 1.1;
+            font-family: 'Poppins', sans-serif; font-size: 2.8rem; font-weight: 900; margin: 0; color: white; text-transform: uppercase;
+            text-shadow: 0 0 15px rgba(116, 172, 223, 0.5); line-height: 1.1; letter-spacing: -1px;
         }
-        @keyframes text-pulse { 0% { text-shadow: 0 0 15px rgba(116, 172, 223, 0.5); } 100% { text-shadow: 0 0 25px rgba(116, 172, 223, 0.8); } }
-        .splash-subtitle { font-size: 1.1rem; color: #8b949e; margin: 0; font-weight: 300; }
+        .splash-subtitle { font-size: 1rem; color: #8b949e; margin: 0; font-weight: 400; font-family: 'Poppins', sans-serif;}
         .btn-enter {
-            background: linear-gradient(135deg, var(--blue), #1e5a84); color: white; border: 1px solid rgba(116, 172, 223, 0.3);
-            padding: 14px 40px; font-size: 1.1rem; font-family: 'Poppins', sans-serif; font-weight: 600; border-radius: 40px; cursor: pointer;
-            box-shadow: 0 8px 25px rgba(41, 128, 185, 0.3); transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); margin-top: 20px; width: 100%; max-width: 280px;
+            background: var(--text-light); color: var(--bg-dark); border: none;
+            padding: 14px 40px; font-size: 1rem; font-family: 'Poppins', sans-serif; font-weight: 600; border-radius: 40px; cursor: pointer;
+            box-shadow: 0 8px 25px rgba(255, 255, 255, 0.1); transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); margin-top: 20px; width: 100%; max-width: 280px;
+            display: flex; justify-content: center; align-items: center; gap: 8px;
         }
-        .btn-enter:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(41, 128, 185, 0.5); border-color: rgba(116, 172, 223, 0.6); }
+        .btn-enter:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(255, 255, 255, 0.2); }
 
         /* --- CONTADORES --- */
         .countdown-container { display: flex; gap: 10px; justify-content: center; margin: 15px 0;}
@@ -114,22 +112,24 @@
             max-width: calc(100vw - 110px); transition: transform 0.3s ease;
         }
         header h1 { margin: 0; font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 1.1rem; line-height: 1.2;}
-        header p { margin: 2px 0 0 0; font-size: 0.75rem; color: var(--text-muted); font-weight: 300; }
+        header p { margin: 2px 0 0 0; font-size: 0.75rem; color: var(--text-muted); font-weight: 400; }
         .header-countdown { margin: 8px 0 0 0; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.05); transform: scale(0.85); transform-origin: left; }
         
         .btn-gol {
-            position: fixed; top: 45px; right: 15px; background: linear-gradient(135deg, #e74c3c, #c0392b); color: white; border: none; padding: 10px 16px;
-            font-size: 0.95rem; font-family: 'Poppins', sans-serif; font-weight: 700; border-radius: 16px; cursor: pointer; box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
-            z-index: 1002; border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 6px;
+            position: fixed; top: 45px; right: 15px; background: white; color: var(--bg-dark); border: none; padding: 10px 16px;
+            font-size: 0.85rem; font-family: 'Poppins', sans-serif; font-weight: 700; border-radius: 16px; cursor: pointer; box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
+            z-index: 1002; display: flex; align-items: center; gap: 6px; text-transform: uppercase;
         }
+        .btn-gol i { font-size: 1.1rem; color: var(--arg-blue); }
         .btn-gol:active { transform: scale(0.95); }
 
         .powered-by {
             position: fixed; bottom: 85px; right: 15px; 
             background: var(--glass-bg);
             backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-            color: var(--text-muted); padding: 8px 14px; border-radius: 12px; font-family: 'Poppins', sans-serif; font-size: 0.7rem; text-decoration: none; z-index: 1000; border: 1px solid var(--border-glow); box-shadow: var(--shadow-premium);
+            color: var(--text-muted); padding: 8px 14px; border-radius: 12px; font-family: 'Poppins', sans-serif; font-size: 0.7rem; text-decoration: none; z-index: 1000; border: 1px solid var(--border-glow); box-shadow: var(--shadow-premium); display: flex; align-items: center; gap: 4px;
         }
+        .powered-by i { color: var(--arg-blue); font-size: 0.9rem;}
         .powered-by strong { color: white; font-size: 0.75rem; font-weight: 600; }
 
         /* --- FILTROS --- */
@@ -142,20 +142,34 @@
         }
         .nav-filters::-webkit-scrollbar { display: none; }
         .btn-filter { 
-            padding: 8px 14px; border: 1px solid transparent; border-radius: 14px; background-color: rgba(255,255,255,0.03); cursor: pointer; font-family: 'Roboto', sans-serif; font-weight: 500; font-size: 0.8rem; color: #c9d1d9; white-space: nowrap; flex-shrink: 0; display: flex; gap: 4px;
+            padding: 8px 14px; border: 1px solid transparent; border-radius: 14px; background-color: rgba(255,255,255,0.03); cursor: pointer; font-family: 'Roboto', sans-serif; font-weight: 400; font-size: 0.8rem; color: #c9d1d9; white-space: nowrap; flex-shrink: 0; display: flex; align-items: center; gap: 6px; transition: all 0.2s;
         }
-        .btn-filter.active { background-color: var(--blue); color: white; font-weight: 600; border-color: rgba(255,255,255,0.1); }
-        .btn-contact { color: var(--arg-blue); border: 1px dashed rgba(116, 172, 223, 0.4); background: transparent; }
+        .btn-filter i { font-size: 1rem; opacity: 0.8;}
+        .btn-filter.active { background-color: var(--text-light); color: var(--bg-dark); font-weight: 600; }
+        .btn-filter.active i { opacity: 1; color: var(--blue);}
+        .btn-contact { color: var(--arg-blue); border: 1px solid rgba(116, 172, 223, 0.2); background: transparent; }
+        .btn-contact i { color: var(--arg-blue); }
 
-        /* --- MAPA Y MARCADORES --- */
-        #map { flex-grow: 1; width: 100%; z-index: 1; }
+        /* --- MAPA Y MARCADORES CON EFECTO DE FOCO --- */
+        #map { 
+            flex-grow: 1; width: 100%; z-index: 1; 
+            transition: filter 0.5s ease, transform 0.5s ease;
+        }
+        .map-focus { 
+            filter: brightness(0.5) contrast(1.1);
+            transform: scale(0.97);
+            border-radius: 16px;
+        }
+        
         .leaflet-control-container .leaflet-top { top: 40px; }
         .leaflet-bar { border: none !important; box-shadow: var(--shadow-premium) !important; margin-top: 100px !important;}
         
-        .map-marker { background-color: var(--bg-dark); border: 2px solid var(--blue); border-radius: 50%; text-align: center; line-height: 24px; font-size: 14px; box-shadow: 0 2px 6px rgba(0,0,0,0.5); }
-        .marker-loud { background-color: var(--bg-dark); border: 2px solid var(--arg-blue); border-radius: 50%; text-align: center; line-height: 24px; font-size: 14px; box-shadow: 0 0 12px rgba(116, 172, 223, 0.6); animation: marker-pulse 2s infinite; }
+        .map-marker, .marker-loud, .marker-hot { display: flex; justify-content: center; align-items: center; color: white;}
         
-        .marker-hot { background-color: #900000; border: 2px solid var(--fire-red); border-radius: 50%; text-align: center; line-height: 24px; font-size: 14px; box-shadow: 0 0 15px var(--fire-red); animation: fire-pulse 0.8s infinite alternate; z-index: 1000 !important;}
+        .map-marker { background-color: var(--bg-dark); border: 2px solid var(--blue); border-radius: 50%; box-shadow: 0 2px 6px rgba(0,0,0,0.5); }
+        .marker-loud { background-color: var(--bg-dark); border: 2px solid var(--arg-blue); border-radius: 50%; box-shadow: 0 0 12px rgba(116, 172, 223, 0.6); animation: marker-pulse 2s infinite; }
+        .marker-hot { background-color: var(--fire-red); border: 2px solid #ff7979; border-radius: 50%; box-shadow: 0 0 15px var(--fire-red); animation: fire-pulse 0.8s infinite alternate; z-index: 1000 !important;}
+        
         @keyframes fire-pulse { 0% { transform: scale(1); box-shadow: 0 0 10px var(--fire-red); } 100% { transform: scale(1.15); box-shadow: 0 0 25px #ff7979; border-color: #ff7979;} }
         @keyframes marker-pulse { 0% { box-shadow: 0 0 0 0 rgba(116, 172, 223, 0.8); } 100% { box-shadow: 0 0 0 20px rgba(116, 172, 223, 0); } }
 
@@ -173,43 +187,39 @@
         .sheet-handle { width: 40px; height: 4px; background-color: rgba(255,255,255,0.3); border-radius: 4px; margin: -10px auto 15px; }
         .sheet-header { display: flex; justify-content: space-between; align-items: flex-start; }
         .sheet-title { font-family: 'Poppins', sans-serif; font-size: 1.3rem; font-weight: 700; color: white; margin: 0; display: flex; align-items: center; gap: 8px;}
-        .sheet-close { background: rgba(255,255,255,0.1); border: none; color: #8b949e; width: 30px; height: 30px; border-radius: 50%; font-size: 1.2rem; display: flex; justify-content: center; align-items: center; cursor: pointer; }
-        .sheet-address { font-size: 0.85rem; color: var(--text-muted); display: flex; align-items: center; gap: 5px; margin-top: -5px; }
+        .sheet-close { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #8b949e; width: 32px; height: 32px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: background 0.2s;}
+        .sheet-close:active { background: rgba(255,255,255,0.1); }
+        .sheet-address { font-size: 0.85rem; color: var(--text-muted); display: flex; align-items: center; gap: 6px; margin-top: -5px; font-weight: 400;}
         .sheet-desc { font-size: 0.95rem; color: var(--text-light); line-height: 1.5; font-weight: 300; margin: 5px 0;}
         .sheet-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 5px; }
         
-        .tag { display: inline-block; background: rgba(41, 128, 185, 0.1); color: var(--arg-blue); padding: 6px 12px; border-radius: 12px; font-size: 0.75rem; font-family: 'Poppins', sans-serif; font-weight: 500; border: 1px solid rgba(41, 128, 185, 0.3); }
-        .tag-loud { background: rgba(116, 172, 223, 0.15); border-color: rgba(116, 172, 223, 0.5); font-weight: 600; }
-        .tag-promo { background: rgba(231, 76, 60, 0.15); border-color: rgba(231, 76, 60, 0.5); color: #e74c3c; font-weight: 700; animation: pulse-promo 1.5s infinite;}
+        .tag { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.05); color: var(--text-light); padding: 6px 12px; border-radius: 12px; font-size: 0.75rem; font-family: 'Poppins', sans-serif; font-weight: 500; border: 1px solid rgba(255,255,255,0.1); }
+        .tag-loud { background: rgba(116, 172, 223, 0.1); border-color: rgba(116, 172, 223, 0.3); color: var(--arg-blue); font-weight: 600; }
+        .tag-promo { background: rgba(231, 76, 60, 0.1); border-color: rgba(231, 76, 60, 0.4); color: #ff7979; font-weight: 600;}
         
-        @keyframes pulse-promo { 0% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.4); } 100% { box-shadow: 0 0 0 10px rgba(231, 76, 60, 0); } }
-
         /* --- BOTONES DEL PANEL --- */
         .btn-group { display: flex; gap: 10px; margin-top: 5px; }
         
         .btn-alentar {
-            flex: 2; background: linear-gradient(135deg, #e67e22, #d35400); color: white; border: none; padding: 14px; border-radius: 14px;
-            font-family: 'Poppins', sans-serif; font-size: 0.95rem; font-weight: 700; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px;
-            box-shadow: 0 4px 15px rgba(211, 84, 0, 0.4); transition: transform 0.2s, background 0.3s;
-        }
-        .btn-alentar:active { transform: scale(0.95); }
-        .btn-alentar.confirmado { background: linear-gradient(135deg, #27ae60, #2ecc71); box-shadow: 0 4px 15px rgba(39, 174, 96, 0.4); pointer-events: none;}
-
-        /* BOTÓN DE COMPARTIR */
-        .btn-share {
-            flex: 1; background: rgba(255,255,255,0.05); color: var(--arg-blue); border: 1px solid rgba(116, 172, 223, 0.3); padding: 14px; border-radius: 14px;
+            flex: 2; background: var(--text-light); color: var(--bg-dark); border: none; padding: 14px; border-radius: 14px;
             font-family: 'Poppins', sans-serif; font-size: 0.9rem; font-weight: 600; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px;
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1); transition: transform 0.2s, background 0.3s;
+        }
+        .btn-alentar i { font-size: 1.2rem; }
+        .btn-alentar:active { transform: scale(0.95); }
+        .btn-alentar.confirmado { background: var(--green); color: white; box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3); pointer-events: none;}
+
+        .btn-share {
+            flex: 1; background: rgba(255,255,255,0.05); color: var(--text-light); border: 1px solid rgba(255,255,255,0.1); padding: 14px; border-radius: 14px;
+            font-family: 'Poppins', sans-serif; font-size: 0.9rem; font-weight: 500; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px;
             transition: all 0.2s;
         }
-        .btn-share:hover { background: rgba(116, 172, 223, 0.1); border-color: rgba(116, 172, 223, 0.6); }
+        .btn-share i { font-size: 1.2rem; color: var(--arg-blue);}
         .btn-share:active { transform: scale(0.95); }
-
-        .flag-anim { display: inline-block; animation: wave 1.2s infinite alternate ease-in-out; transform-origin: bottom right; }
-        @keyframes wave { 0% { transform: rotate(-10deg); } 100% { transform: rotate(15deg); } }
 
         #sheet-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5); z-index: 1009; opacity: 0; visibility: hidden; transition: all 0.4s ease;
+            background: rgba(0,0,0,0.6); z-index: 1009; opacity: 0; visibility: hidden; transition: all 0.4s ease;
         }
         #sheet-overlay.active { opacity: 1; visibility: visible; }
     </style>
@@ -226,21 +236,23 @@
     <div id="splash-screen">
         <div class="splash-bg-anim"></div>
         <div class="splash-content">
-            <h1 class="hype-title">¡LLEGÓ LA HORA!</h1>
-            <p class="splash-subtitle">Buscá dónde alentar a la Selección en Posadas</p>
+            <h1 class="hype-title">MundialMap</h1>
+            <p class="splash-subtitle">Directorio Oficial de Pantallas en Posadas</p>
             <div class="countdown-container">
                 <div class="time-box"><span class="cd-days">00</span><span class="label">DÍAS</span></div>
                 <div class="time-box"><span class="cd-hours">00</span><span class="label">HS</span></div>
                 <div class="time-box"><span class="cd-minutes">00</span><span class="label">MIN</span></div>
                 <div class="time-box"><span class="cd-seconds">00</span><span class="label">SEG</span></div>
             </div>
-            <button class="btn-enter" onclick="entrarAlMapa()">ENTRAR AL MAPA</button>
+            <button class="btn-enter" onclick="entrarAlMapa()">
+                <i class="ph ph-map-trifold" style="font-size: 1.2rem;"></i> Ingresar al Mapa
+            </button>
         </div>
     </div>
 
     <header id="main-header">
         <h1>MundialMap</h1>
-        <p>Dónde ver el partido</p>
+        <p>Directorio Posadas</p>
         <div class="countdown-container header-countdown">
             <div class="time-box"><span class="cd-days">00</span><span class="label">DÍAS</span></div>
             <div class="time-box"><span class="cd-hours">00</span><span class="label">HS</span></div>
@@ -249,19 +261,24 @@
         </div>
     </header>
 
-    <button class="btn-gol" onclick="explotarGol()">⚽ GOL</button>
+    <button class="btn-gol" onclick="explotarGol()">
+        <i class="ph-fill ph-megaphone"></i> Celebrar
+    </button>
 
     <a href="https://www.instagram.com/apex_sec/" target="_blank" rel="noopener noreferrer" class="powered-by">
-        ⚡ by <strong>Apex Tech</strong>
+        <i class="ph-fill ph-lightning"></i> by <strong>Apex Tech</strong>
     </a>
 
     <div class="nav-filters" id="nav-filters">
-        <button class="btn-filter active" data-cat="all">🌏 Todos</button>
-        <button class="btn-filter" data-cat="pantalla">📺 Pantallas</button>
-        <button class="btn-filter" data-cat="birra">🍻 Cerveza</button>
-        <button class="btn-filter" data-cat="costa">🌊 Costa</button>
-        <button class="btn-filter" data-cat="centro">🏙️ Centro</button>
-        <a href="https://wa.me/549376XXXXXXX" target="_blank" class="btn-filter btn-contact">💼 Sumar Local</a>
+        <button class="btn-filter active" data-cat="all"><i class="ph ph-compass"></i> Explorar</button>
+        <button class="btn-filter" data-cat="pantalla"><i class="ph ph-television"></i> Pantalla</button>
+        <button class="btn-filter" data-cat="birra"><i class="ph ph-beer-bottle"></i> Cervecería</button>
+        <button class="btn-filter" data-cat="costa"><i class="ph ph-waves"></i> Costanera</button>
+        <button class="btn-filter" data-cat="centro"><i class="ph ph-buildings"></i> Centro</button>
+        <!-- BOTÓN DE CONTACTO ACTUALIZADO CON NÚMERO Y MENSAJE PREESCRITO -->
+        <a href="https://wa.me/5493765039030?text=Hola%20Carlos!%20Me%20interesa%20dar%20de%20alta%20mi%20local%20en%20MundialMap%20Posadas." target="_blank" class="btn-filter btn-contact">
+            <i class="ph ph-storefront"></i> Alta Local
+        </a>
     </div>
 
     <div id="map"></div>
@@ -271,23 +288,28 @@
         <div class="sheet-handle"></div>
         <div class="sheet-header">
             <h2 class="sheet-title" id="sheet-title">Nombre</h2>
-            <button class="sheet-close" onclick="cerrarPanel()">×</button>
+            <button class="sheet-close" onclick="cerrarPanel()"><i class="ph ph-x"></i></button>
         </div>
-        <div class="sheet-address">📍 <span id="sheet-address">Dirección</span></div>
+        <div class="sheet-address"><i class="ph-fill ph-map-pin"></i> <span id="sheet-address">Dirección</span></div>
         <p class="sheet-desc" id="sheet-desc">Descripción</p>
         <div class="sheet-tags" id="sheet-tags"></div>
         
         <div class="btn-group">
-            <button id="btn-alentar" class="btn-alentar" onclick="sumarHinchada()">Voy a alentar acá 🙋‍♂️</button>
-            <button id="btn-share" class="btn-share" onclick="compartirLocal()">📲 Invitar</button>
+            <button id="btn-alentar" class="btn-alentar" onclick="sumarHinchada()">
+                <i class="ph ph-hand-palm"></i> Marcar Asistencia
+            </button>
+            <button id="btn-share" class="btn-share" onclick="compartirLocal()">
+                <i class="ph ph-share-network"></i> Compartir
+            </button>
         </div>
     </div>
 
     <script>
+        // Ticker
         const partidosEnVivo = [
-            { eq1: "ARG 🇦🇷", res: "2 - 0", eq2: "MEX 🇲🇽", detalle: "⚽ 12' Messi, ⚽ 55' Garnacho" },
-            { eq1: "BRA 🇧🇷", res: "1 - 1", eq2: "FRA 🇫🇷", detalle: "⚽ 33' Mbappé, ⚽ 45+2' Vinicius" },
-            { eq1: "ENG 🏴󠁧󠁢󠁥󠁮󠁧󠁿", res: "0 - 0", eq2: "ESP 🇪🇸", detalle: "Min 78'" }
+            { eq1: "ARG", res: "2 - 0", eq2: "MEX", detalle: "12' Messi, 55' Garnacho" },
+            { eq1: "BRA", res: "1 - 1", eq2: "FRA", detalle: "33' Mbappé, 45' Vinicius" },
+            { eq1: "ENG", res: "0 - 0", eq2: "ESP", detalle: "Min 78'" }
         ];
         function cargarTicker() {
             const track = document.getElementById('ticker-track');
@@ -301,6 +323,8 @@
         function entrarAlMapa() { document.getElementById('splash-screen').classList.add('hidden'); }
         function explotarGol() {
             document.body.classList.add('shake-screen');
+            if (navigator.vibrate) navigator.vibrate([50, 100, 50]);
+            
             setTimeout(() => document.body.classList.remove('shake-screen'), 400);
             var end = Date.now() + 2500;
             (function frame() {
@@ -328,12 +352,12 @@
         L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { maxZoom: 19, attribution: '© OS' }).addTo(map);
 
         let places = [
-            { id: 1, name: "Hotel Continental", address: "Bolívar 1879, Piso 12", coords: [-27.3653, -55.8953], desc: "Ideal para verlo tranqui desde arriba. Pantalla y menú armado.", categories: ["pantalla", "centro"], tags: ["Rooftop", "Reservas"], volumenAlto: false, confirmados: 5, promoFlash: "" },
-            { id: 2, name: "Cachalote", address: "Av. Costanera", coords: [-27.3600, -55.8895], desc: "Mucha movida en la terraza. Clásico para estar al aire libre.", categories: ["birra", "costa"], tags: ["Terraza", "Artesanal"], volumenAlto: true, confirmados: 12, promoFlash: "🔥 2x1 en Pintas si venís con la camiseta!" },
-            { id: 3, name: "Antares", address: "Av. Costanera (Obispo Kemerer)", coords: [-27.3592, -55.8885], desc: "El clásico de la costa. Enganchás buen lugar temprano.", categories: ["birra", "costa"], tags: ["Terraza"], volumenAlto: false, confirmados: 8, promoFlash: "" },
-            { id: 4, name: "Glück", address: "Coronel López 2002", coords: [-27.3615, -55.8905], desc: "Se pone lindo. Mesas grandes para ir en grupo.", categories: ["birra", "costa", "pantalla"], tags: ["Comida"], volumenAlto: true, confirmados: 19, promoFlash: "" }, 
-            { id: 5, name: "Refugio Patagonia", address: "Alfonso de Arrechea 811", coords: [-27.3626, -55.8943], desc: "Explota siempre. Bajada del cerro a ver el partido.", categories: ["birra", "costa"], tags: ["Promos"], volumenAlto: true, confirmados: 25, promoFlash: "" }, 
-            { id: 6, name: "Vitrage Resto", address: "Bolívar 1918", coords: [-27.3665, -55.8960], desc: "Punto oficial. Pantallas por todos lados y promos vigentes.", categories: ["pantalla", "centro"], tags: ["Punto Oficial"], volumenAlto: true, confirmados: 2, promoFlash: "" }
+            { id: 1, name: "Hotel Continental", address: "Bolívar 1879, Piso 12", coords: [-27.3653, -55.8953], desc: "Ideal para disfrutar el encuentro desde altura con servicio premium.", categories: ["pantalla", "centro"], tags: ["Rooftop", "Reservas"], volumenAlto: false, confirmados: 5, promoFlash: "" },
+            { id: 2, name: "Cachalote", address: "Av. Costanera", coords: [-27.3600, -55.8895], desc: "Excelente ambiente al aire libre para grupos grandes.", categories: ["birra", "costa"], tags: ["Terraza", "Artesanal"], volumenAlto: true, confirmados: 12, promoFlash: "2x1 Presentando esta pantalla" },
+            { id: 3, name: "Antares", address: "Av. Costanera (Obispo Kemerer)", coords: [-27.3592, -55.8885], desc: "Punto clásico de la costanera. Se recomienda llegar con antelación.", categories: ["birra", "costa"], tags: ["Terraza"], volumenAlto: false, confirmados: 8, promoFlash: "" },
+            { id: 4, name: "Glück", address: "Coronel López 2002", coords: [-27.3615, -55.8905], desc: "Sede de encuentros masivos. Amplia capacidad y servicio de mesa.", categories: ["birra", "costa", "pantalla"], tags: ["Gastronomía"], volumenAlto: true, confirmados: 19, promoFlash: "" }, 
+            { id: 5, name: "Refugio Patagonia", address: "Alfonso de Arrechea 811", coords: [-27.3626, -55.8943], desc: "Ubicación estratégica en la bajada del cerro. Alta demanda.", categories: ["birra", "costa"], tags: ["Promociones"], volumenAlto: true, confirmados: 25, promoFlash: "" }, 
+            { id: 6, name: "Vitrage Resto", address: "Bolívar 1918", coords: [-27.3665, -55.8960], desc: "Establecimiento designado como Punto Oficial de Transmisión.", categories: ["pantalla", "centro"], tags: ["Punto Oficial"], volumenAlto: true, confirmados: 2, promoFlash: "" }
         ];
 
         let activeMarkers = [];
@@ -344,17 +368,19 @@
             if(!lugar) return;
             localSeleccionado = lugar;
 
-            map.flyTo([lugar.coords[0] - 0.003, lugar.coords[1]], 16, { duration: 0.5 });
+            if (navigator.vibrate) navigator.vibrate(20);
+
+            map.flyTo([lugar.coords[0] - 0.003, lugar.coords[1]], 15.5, { duration: 0.5 });
 
             let tituloHTML = lugar.name;
-            let tagsHTML = lugar.tags.map(t => `<span class="tag">${t}</span>`).join('');
+            let tagsHTML = lugar.tags.map(t => `<span class="tag"><i class="ph ph-tag"></i> ${t}</span>`).join('');
             
             if(lugar.volumenAlto) {
-                tituloHTML += ` <span class="flag-anim">🇦🇷</span>`;
-                tagsHTML += `<span class="tag tag-loud">🔊 Clima Cancha</span>`;
+                tituloHTML += ` <i class="ph-fill ph-seal-check" style="color: var(--arg-blue); font-size: 1.2rem; margin-left: 4px;"></i>`;
+                tagsHTML += `<span class="tag tag-loud"><i class="ph ph-speaker-hifi"></i> Audio Ambiente</span>`;
             }
             if(lugar.promoFlash !== "") {
-                tagsHTML += `<span class="tag tag-promo">${lugar.promoFlash}</span>`;
+                tagsHTML += `<span class="tag tag-promo"><i class="ph ph-fire"></i> ${lugar.promoFlash}</span>`;
             }
 
             document.getElementById('sheet-title').innerHTML = tituloHTML;
@@ -364,17 +390,16 @@
 
             const btn = document.getElementById('btn-alentar');
             const votoPrevio = localStorage.getItem('voto_mundialmap_local_' + lugar.id);
-            btn.style.background = "";
-            btn.style.boxShadow = "";
 
             if(votoPrevio) {
                 btn.classList.add('confirmado');
-                btn.innerHTML = `¡Confirmado! Ya somos ${lugar.confirmados} 🔥`;
+                btn.innerHTML = `<i class="ph-fill ph-check-circle"></i> Asistencia Registrada (${lugar.confirmados})`;
             } else {
                 btn.classList.remove('confirmado');
-                btn.innerHTML = `Voy a alentar acá (${lugar.confirmados} listos) 🙋‍♂️`;
+                btn.innerHTML = `<i class="ph ph-hand-palm"></i> Marcar Asistencia (${lugar.confirmados})`;
             }
 
+            document.getElementById('map').classList.add('map-focus');
             document.getElementById('main-header').style.transform = 'translateY(-150%)';
             document.getElementById('nav-filters').style.transform = 'translateY(150%)';
             document.getElementById('sheet-overlay').classList.add('active');
@@ -382,6 +407,7 @@
         }
 
         function cerrarPanel() {
+            document.getElementById('map').classList.remove('map-focus');
             document.getElementById('sheet-overlay').classList.remove('active');
             document.getElementById('bottom-sheet').classList.remove('open');
             document.getElementById('main-header').style.transform = 'translateY(0)';
@@ -392,16 +418,15 @@
         function sumarHinchada() {
             if(!localSeleccionado) return;
             
+            if (navigator.vibrate) navigator.vibrate([30, 50, 30]);
+
             const votoPrevio = localStorage.getItem('voto_mundialmap_local_' + localSeleccionado.id);
             const btn = document.getElementById('btn-alentar');
             
             if(votoPrevio) {
-                btn.innerHTML = `⚠️ Ya confirmaste asistencia acá`;
-                btn.style.background = "linear-gradient(135deg, #7f8c8d, #95a5a6)"; 
-                btn.style.boxShadow = "none";
+                btn.innerHTML = `<i class="ph ph-warning-circle"></i> Registro duplicado`;
                 setTimeout(() => {
-                    btn.style.background = ""; 
-                    btn.innerHTML = `¡Confirmado! Ya somos ${localSeleccionado.confirmados} 🔥`;
+                    btn.innerHTML = `<i class="ph-fill ph-check-circle"></i> Asistencia Registrada (${localSeleccionado.confirmados})`;
                 }, 2000);
                 return;
             }
@@ -409,34 +434,30 @@
             localSeleccionado.confirmados++; 
             localStorage.setItem('voto_mundialmap_local_' + localSeleccionado.id, 'true');
             
-            btn.style.background = "";
             btn.classList.add('confirmado');
-            btn.innerHTML = `¡Confirmado! Ya somos ${localSeleccionado.confirmados} 🔥`;
+            btn.innerHTML = `<i class="ph-fill ph-check-circle"></i> Asistencia Registrada (${localSeleccionado.confirmados})`;
             
             const filtroActivo = document.querySelector('.btn-filter.active').dataset.cat;
             renderMap(filtroActivo);
         }
 
-        // --- SISTEMA PARA COMPARTIR NATIVO ---
         async function compartirLocal() {
             if (!localSeleccionado) return;
             
             const shareData = {
-                title: 'MundialMap Posadas 🇦🇷',
-                text: `Che, la previa del partido es en ${localSeleccionado.name} (${localSeleccionado.address}). ¡Mirá dónde queda en el mapa y sumate a la banda! 🍻`,
+                title: 'MundialMap Posadas',
+                text: `Punto de encuentro confirmado en ${localSeleccionado.name} (${localSeleccionado.address}). Accedé a la ubicación oficial:`,
                 url: window.location.href
             };
 
             try {
-                // Chequeamos si el navegador del celular soporta compartir nativo
                 if (navigator.share) {
                     await navigator.share(shareData);
                 } else {
-                    // Si están en PC o en un navegador viejo, copiamos al portapapeles
-                    alert(`Tu navegador no soporta el menú rápido.\nCopiá este link para invitar a la banda: ${window.location.href}`);
+                    alert(`Copie el siguiente enlace para compartir:\n${window.location.href}`);
                 }
             } catch (err) {
-                console.log('Error al compartir:', err);
+                console.log('Operación cancelada');
             }
         }
 
@@ -448,16 +469,16 @@
                 if (filter === 'all' || p.categories.includes(filter)) {
                     
                     let iconStyle = p.volumenAlto ? 'marker-loud' : 'map-marker';
-                    let iconoFisico = '⚽';
+                    let iconDOM = '<i class="ph-fill ph-map-pin" style="font-size: 16px;"></i>';
 
-                    if(p.promoFlash !== "") iconoFisico = '🔥';
+                    if(p.promoFlash !== "") iconDOM = '<i class="ph-fill ph-fire" style="font-size: 16px;"></i>';
 
                     if(p.confirmados >= 20) {
                         iconStyle = 'marker-hot';
-                        iconoFisico = '💥';
+                        iconDOM = '<i class="ph-fill ph-lightning" style="font-size: 18px;"></i>';
                     }
 
-                    const icon = L.divIcon({ className: iconStyle, html: iconoFisico, iconSize: [28, 28], iconAnchor: [14, 28] });
+                    const icon = L.divIcon({ className: iconStyle, html: iconDOM, iconSize: [32, 32], iconAnchor: [16, 32] });
 
                     const marker = L.marker(p.coords, {icon: icon})
                                     .addTo(map)
@@ -472,14 +493,11 @@
         document.querySelectorAll('button.btn-filter').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 document.querySelectorAll('button.btn-filter').forEach(b => b.classList.remove('active'));
-                const target = e.target;
+                const target = e.target.closest('button');
                 target.classList.add('active');
                 renderMap(target.dataset.cat);
             });
         });
-    </script>
-</body>
-</html>
     </script>
 </body>
 </html>
