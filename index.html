@@ -31,6 +31,7 @@
             --green: #27ae60;
             --arg-blue: #74acdf;
             --fire-red: #e74c3c;
+            --gold: #f1c40f;
             --text-light: #e6edf3;
             --text-muted: #8b949e;
             --shadow-premium: 0 12px 40px rgba(0,0,0,0.5);
@@ -197,6 +198,10 @@
         .tag-loud { background: rgba(116, 172, 223, 0.1); border-color: rgba(116, 172, 223, 0.3); color: var(--arg-blue); font-weight: 600; }
         .tag-promo { background: rgba(231, 76, 60, 0.1); border-color: rgba(231, 76, 60, 0.4); color: #ff7979; font-weight: 600;}
         
+        /* NUEVO: ETIQUETA DORADA PARA EL MENÚ SECRETO */
+        .tag-secret { background: rgba(241, 196, 15, 0.15); border-color: rgba(241, 196, 15, 0.5); color: var(--gold); font-weight: 600; animation: pulse-secret 1.5s infinite;}
+        @keyframes pulse-secret { 0% { box-shadow: 0 0 0 0 rgba(241, 196, 15, 0.4); } 100% { box-shadow: 0 0 0 10px rgba(241, 196, 15, 0); } }
+        
         /* --- BOTONES DEL PANEL --- */
         .btn-group { display: flex; gap: 10px; margin-top: 5px; }
         
@@ -275,7 +280,6 @@
         <button class="btn-filter" data-cat="birra"><i class="ph ph-beer-bottle"></i> Cervecería</button>
         <button class="btn-filter" data-cat="costa"><i class="ph ph-waves"></i> Costanera</button>
         <button class="btn-filter" data-cat="centro"><i class="ph ph-buildings"></i> Centro</button>
-        <!-- BOTÓN DE CONTACTO ACTUALIZADO CON NÚMERO Y MENSAJE PREESCRITO -->
         <a href="https://wa.me/5493765039030?text=Hola%20Carlos!%20Me%20interesa%20dar%20de%20alta%20mi%20local%20en%20MundialMap%20Posadas." target="_blank" class="btn-filter btn-contact">
             <i class="ph ph-storefront"></i> Alta Local
         </a>
@@ -351,13 +355,17 @@
         const map = L.map('map', { zoomControl: false, tap: false }).setView([-27.364, -55.892], 14);
         L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { maxZoom: 19, attribution: '© OS' }).addTo(map);
 
+        // BASE DE DATOS ACTUALIZADA: Se agregó el campo menuSecreto
         let places = [
-            { id: 1, name: "Hotel Continental", address: "Bolívar 1879, Piso 12", coords: [-27.3653, -55.8953], desc: "Ideal para disfrutar el encuentro desde altura con servicio premium.", categories: ["pantalla", "centro"], tags: ["Rooftop", "Reservas"], volumenAlto: false, confirmados: 5, promoFlash: "" },
-            { id: 2, name: "Cachalote", address: "Av. Costanera", coords: [-27.3600, -55.8895], desc: "Excelente ambiente al aire libre para grupos grandes.", categories: ["birra", "costa"], tags: ["Terraza", "Artesanal"], volumenAlto: true, confirmados: 12, promoFlash: "2x1 Presentando esta pantalla" },
-            { id: 3, name: "Antares", address: "Av. Costanera (Obispo Kemerer)", coords: [-27.3592, -55.8885], desc: "Punto clásico de la costanera. Se recomienda llegar con antelación.", categories: ["birra", "costa"], tags: ["Terraza"], volumenAlto: false, confirmados: 8, promoFlash: "" },
-            { id: 4, name: "Glück", address: "Coronel López 2002", coords: [-27.3615, -55.8905], desc: "Sede de encuentros masivos. Amplia capacidad y servicio de mesa.", categories: ["birra", "costa", "pantalla"], tags: ["Gastronomía"], volumenAlto: true, confirmados: 19, promoFlash: "" }, 
-            { id: 5, name: "Refugio Patagonia", address: "Alfonso de Arrechea 811", coords: [-27.3626, -55.8943], desc: "Ubicación estratégica en la bajada del cerro. Alta demanda.", categories: ["birra", "costa"], tags: ["Promociones"], volumenAlto: true, confirmados: 25, promoFlash: "" }, 
-            { id: 6, name: "Vitrage Resto", address: "Bolívar 1918", coords: [-27.3665, -55.8960], desc: "Establecimiento designado como Punto Oficial de Transmisión.", categories: ["pantalla", "centro"], tags: ["Punto Oficial"], volumenAlto: true, confirmados: 2, promoFlash: "" }
+            { id: 1, name: "Hotel Continental", address: "Bolívar 1879, Piso 12", coords: [-27.3653, -55.8953], desc: "Ideal para disfrutar el encuentro desde altura con servicio premium.", categories: ["pantalla", "centro"], tags: ["Rooftop", "Reservas"], volumenAlto: false, confirmados: 5, promoFlash: "", menuSecreto: "" },
+            
+            // CACHALOTE AHORA TIENE EL MENÚ SECRETO ACTIVO
+            { id: 2, name: "Cachalote", address: "Av. Costanera", coords: [-27.3600, -55.8895], desc: "Excelente ambiente al aire libre para grupos grandes.", categories: ["birra", "costa"], tags: ["Terraza", "Artesanal"], volumenAlto: true, confirmados: 12, promoFlash: "", menuSecreto: "Menú Oculto: Mostrá esta pantalla para un 2x1 en Pintas" },
+            
+            { id: 3, name: "Antares", address: "Av. Costanera (Obispo Kemerer)", coords: [-27.3592, -55.8885], desc: "Punto clásico de la costanera. Se recomienda llegar con antelación.", categories: ["birra", "costa"], tags: ["Terraza"], volumenAlto: false, confirmados: 8, promoFlash: "", menuSecreto: "" },
+            { id: 4, name: "Glück", address: "Coronel López 2002", coords: [-27.3615, -55.8905], desc: "Sede de encuentros masivos. Amplia capacidad y servicio de mesa.", categories: ["birra", "costa", "pantalla"], tags: ["Gastronomía"], volumenAlto: true, confirmados: 19, promoFlash: "Happy Hour toda la tarde", menuSecreto: "" }, 
+            { id: 5, name: "Refugio Patagonia", address: "Alfonso de Arrechea 811", coords: [-27.3626, -55.8943], desc: "Ubicación estratégica en la bajada del cerro. Alta demanda.", categories: ["birra", "costa"], tags: ["Promociones"], volumenAlto: true, confirmados: 25, promoFlash: "", menuSecreto: "" }, 
+            { id: 6, name: "Vitrage Resto", address: "Bolívar 1918", coords: [-27.3665, -55.8960], desc: "Establecimiento designado como Punto Oficial de Transmisión.", categories: ["pantalla", "centro"], tags: ["Punto Oficial"], volumenAlto: true, confirmados: 2, promoFlash: "", menuSecreto: "" }
         ];
 
         let activeMarkers = [];
@@ -379,8 +387,13 @@
                 tituloHTML += ` <i class="ph-fill ph-seal-check" style="color: var(--arg-blue); font-size: 1.2rem; margin-left: 4px;"></i>`;
                 tagsHTML += `<span class="tag tag-loud"><i class="ph ph-speaker-hifi"></i> Audio Ambiente</span>`;
             }
-            if(lugar.promoFlash !== "") {
+            if(lugar.promoFlash && lugar.promoFlash !== "") {
                 tagsHTML += `<span class="tag tag-promo"><i class="ph ph-fire"></i> ${lugar.promoFlash}</span>`;
+            }
+            
+            // LÓGICA PARA RENDERIZAR LA ETIQUETA DEL MENÚ SECRETO
+            if(lugar.menuSecreto && lugar.menuSecreto !== "") {
+                tagsHTML += `<span class="tag tag-secret"><i class="ph-fill ph-lock-key"></i> ${lugar.menuSecreto}</span>`;
             }
 
             document.getElementById('sheet-title').innerHTML = tituloHTML;
@@ -471,8 +484,13 @@
                     let iconStyle = p.volumenAlto ? 'marker-loud' : 'map-marker';
                     let iconDOM = '<i class="ph-fill ph-map-pin" style="font-size: 16px;"></i>';
 
-                    if(p.promoFlash !== "") iconDOM = '<i class="ph-fill ph-fire" style="font-size: 16px;"></i>';
+                    // Si tiene promo normal es un fueguito rojo
+                    if(p.promoFlash && p.promoFlash !== "") iconDOM = '<i class="ph-fill ph-fire" style="font-size: 16px;"></i>';
+                    
+                    // Si tiene Menú Secreto, reemplaza el icono por una estrella dorada en el mapa
+                    if(p.menuSecreto && p.menuSecreto !== "") iconDOM = '<i class="ph-fill ph-star" style="font-size: 16px; color: var(--gold);"></i>';
 
+                    // La condición de explotar de gente anula las anteriores (es la más importante)
                     if(p.confirmados >= 20) {
                         iconStyle = 'marker-hot';
                         iconDOM = '<i class="ph-fill ph-lightning" style="font-size: 18px;"></i>';
