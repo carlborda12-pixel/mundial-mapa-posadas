@@ -111,14 +111,14 @@
         }
         .btn-filter.active { background: var(--primary); color: white; font-weight: 600; box-shadow: 0 4px 15px rgba(194, 65, 12, 0.4);}
 
-        /* BOTÓN FLOTANTE IA (MAGIA) */
+        /* BOTÓN FLOTANTE IA */
         .ai-fab {
             position: fixed; bottom: 85px; right: 15px; z-index: 1002;
             background: linear-gradient(45deg, #c2410c, #d97706, #047857, #c2410c);
             background-size: 300% 300%; animation: gradientMove 4s ease infinite;
             color: white; border: none; padding: 14px 20px; border-radius: 30px;
             font-family: 'Poppins', sans-serif; font-size: 0.9rem; font-weight: 700;
-            display: flex; align-items: center; gap: 8px; box-shadow: 0 10px 25px rgba(217, 119, 6, 0.5);
+            display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 10px 25px rgba(217, 119, 6, 0.5);
             cursor: pointer; transition: transform 0.2s var(--bounce); border: 1px solid rgba(255,255,255,0.3);
         }
         .ai-fab:active { transform: scale(0.95); }
@@ -141,17 +141,12 @@
             white-space: nowrap; transform-origin: center bottom; cursor: pointer; transition: transform 0.2s var(--bounce);
         }
         .marker-pill:active { transform: scale(0.9); }
-        
-        .pill-thumb {
-            width: 28px; height: 28px; border-radius: 50%; object-fit: cover;
-            border: 2px solid transparent; 
-        }
+        .pill-thumb { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 2px solid transparent; }
         .pill-hot .pill-thumb { border-color: var(--tourist); box-shadow: 0 0 10px rgba(217, 119, 6, 0.6); }
-        
         .marker-appear { animation: popIn 0.5s var(--bounce) both; }
         @keyframes popIn { 0% { opacity: 0; transform: scale(0.3) translateY(30px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
 
-        /* --- BOTTOM SHEET CON HERO HEADER --- */
+        /* --- BOTTOM SHEET HERO --- */
         #bottom-sheet {
             position: fixed; bottom: 0; left: 0; width: 100%; 
             background: var(--glass-dark); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
@@ -161,28 +156,30 @@
         }
         #bottom-sheet.open { transform: translateY(0); }
         
-        .sheet-hero {
-            width: 100%; height: 240px; background-size: cover; background-position: center; position: relative;
-            border-top-left-radius: 28px; border-top-right-radius: 28px; flex-shrink: 0;
-        }
-        .sheet-hero-overlay {
-            position: absolute; bottom: 0; left: 0; width: 100%; height: 70%;
-            background: linear-gradient(to top, rgba(20, 17, 15, 1) 0%, rgba(20, 17, 15, 0.8) 40%, transparent 100%);
-        }
-        
+        .sheet-hero { width: 100%; height: 240px; background-size: cover; background-position: center; position: relative; border-top-left-radius: 28px; border-top-right-radius: 28px; flex-shrink: 0;}
+        .sheet-hero-overlay { position: absolute; bottom: 0; left: 0; width: 100%; height: 70%; background: linear-gradient(to top, rgba(20, 17, 15, 1) 0%, rgba(20, 17, 15, 0.8) 40%, transparent 100%);}
         .sheet-handle { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); width: 45px; height: 5px; background: rgba(255,255,255,0.8); border-radius: 5px; z-index: 3; box-shadow: 0 2px 5px rgba(0,0,0,0.5);}
         .sheet-close { position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); color: #fff; width: 36px; height: 36px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 3; transition: transform 0.2s;}
         .sheet-close:active { transform: scale(0.9); }
         
         .sheet-content-wrapper { padding: 0 24px; position: relative; margin-top: -40px; z-index: 2; display: flex; flex-direction: column; gap: 10px;}
-        
         .sheet-title { font-family: 'Poppins', sans-serif; font-size: clamp(1.4rem, 6vw, 1.8rem); font-weight: 700; color: white; margin: 0; line-height: 1.1; text-shadow: 0 2px 10px rgba(0,0,0,0.8);}
-        
         .sheet-info-row { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; color: var(--text-muted); font-weight: 500; margin-top: 5px;}
         .sheet-info-row i { color: var(--tourist); font-size: 1.2rem;}
         
         .distance-badge { background: rgba(255,255,255,0.15); color: #fff; padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; font-family: 'Poppins', sans-serif; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;}
-        .sheet-desc { font-size: 0.95rem; color: #e7e5e4; line-height: 1.6; font-weight: 300; margin: 5px 0;}
+        .sheet-desc { font-size: 1rem; color: #e7e5e4; line-height: 1.6; font-weight: 300; margin: 5px 0;}
+
+        /* AUDIO GUÍA */
+        .audio-player { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 14px 16px; display: none; align-items: center; gap: 14px; margin-top: 5px; }
+        .audio-player.active { display: flex; animation: fadeIn 0.4s ease; }
+        .audio-play-btn { background: var(--tourist); color: #000; border: none; border-radius: 50%; width: 46px; height: 46px; display: flex; justify-content: center; align-items: center; font-size: 1.5rem; cursor: pointer; transition: transform 0.2s;}
+        .audio-play-btn:active { transform: scale(0.9); }
+        .audio-details { flex-grow: 1; display: flex; flex-direction: column;}
+        .audio-title { font-family: 'Poppins', sans-serif; font-size: 0.85rem; font-weight: 600; color: white;}
+        .audio-subtitle { font-size: 0.7rem; color: var(--text-muted); display: flex; justify-content: space-between;}
+        .audio-progress-bar { width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; margin-top: 6px;}
+        .audio-progress-fill { width: 0%; height: 100%; background: var(--tourist); transition: width 0.2s linear;}
 
         .sheet-tags-vibe { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px;}
         .vibe-tag { background: var(--vibe-bg); border: 1px solid rgba(4, 120, 87, 0.4); color: #34d399; font-weight: 600; font-size: 0.75rem; border-radius: 20px; padding: 6px 14px;}
@@ -198,41 +195,71 @@
         #sheet-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1009; opacity: 0; visibility: hidden; transition: opacity 0.4s ease, visibility 0.4s; backdrop-filter: blur(3px);}
         #sheet-overlay.active { opacity: 1; visibility: visible; }
 
-        /* MODAL IA "RUTA MÁGICA" */
-        #ai-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; opacity: 0; visibility: hidden; transition: all 0.3s ease; backdrop-filter: blur(10px); display: flex; justify-content: center; align-items: center;}
-        #ai-modal.active { opacity: 1; visibility: visible; }
-        .ai-content { background: var(--glass-dark); border: 1px solid var(--tourist); border-radius: 24px; padding: 30px 24px; width: 85%; max-width: 380px; box-shadow: 0 10px 40px rgba(217, 119, 6, 0.3); transform: scale(0.95); transition: all 0.3s var(--bounce); position: relative;}
-        #ai-modal.active .ai-content { transform: scale(1); }
+        /* MODALES */
+        #ai-modal, #sos-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; opacity: 0; visibility: hidden; transition: all 0.3s ease; backdrop-filter: blur(10px); display: flex; justify-content: center; align-items: center;}
+        #ai-modal.active, #sos-modal.active { opacity: 1; visibility: visible; }
+        .modal-content-box { background: var(--glass-dark); border: 1px solid var(--border-glow); border-radius: 24px; padding: 30px 24px; width: 85%; max-width: 380px; box-shadow: 0 10px 40px rgba(0,0,0,0.6); transform: scale(0.95); transition: all 0.3s var(--bounce); position: relative;}
+        .modal-content-ai { border-color: var(--tourist); box-shadow: 0 10px 40px rgba(217, 119, 6, 0.3); }
+        #ai-modal.active .modal-content-box, #sos-modal.active .modal-content-box { transform: scale(1); }
+        
         .ai-header { display: flex; align-items: center; gap: 10px; color: var(--tourist); font-family: 'Poppins', sans-serif; font-size: 1.3rem; font-weight: 700; margin-bottom: 20px;}
         .ai-header i { font-size: 1.8rem; animation: starPulse 1.5s infinite alternate;}
         .ai-text { font-size: 0.95rem; color: #e7e5e4; line-height: 1.6; font-family: 'Roboto', sans-serif; min-height: 150px;}
         .cursor { display: inline-block; width: 8px; height: 18px; background: var(--tourist); animation: blink 1s step-end infinite; margin-left: 2px; vertical-align: middle;}
-        .btn-close-ai { width: 100%; margin-top: 25px; padding: 14px; border: none; background: rgba(255,255,255,0.1); color: white; border-radius: 14px; font-family: 'Poppins', sans-serif; font-weight: 600; cursor: pointer; transition: background 0.2s;}
-        .btn-close-ai:active { background: rgba(255,255,255,0.2); }
-
-        /* MODAL DE EMERGENCIAS Y SERVICIOS RESTAURADO */
-        #sos-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; opacity: 0; visibility: hidden; transition: all 0.3s ease; backdrop-filter: blur(10px); display: flex; justify-content: center; align-items: center;}
-        #sos-modal.active { opacity: 1; visibility: visible; }
-        .sos-content { background: var(--glass-dark); border: 1px solid var(--border-glow); border-radius: 24px; padding: 30px 24px; width: 85%; max-width: 380px; box-shadow: 0 10px 40px rgba(0,0,0,0.6); transform: scale(0.95); transition: all 0.3s var(--bounce); position: relative;}
-        #sos-modal.active .sos-content { transform: scale(1); }
-        .sos-content h3 { font-family: 'Poppins', sans-serif; margin: 0 0 5px 0; color: var(--fire-red); display: flex; align-items: center; gap: 8px; font-size: 1.4rem;}
-        .sos-content p { margin: 0 0 25px 0; font-size: 0.9rem; color: var(--text-muted); }
+        
+        .sos-header { font-family: 'Poppins', sans-serif; margin: 0 0 5px 0; color: var(--fire-red); display: flex; align-items: center; gap: 8px; font-size: 1.4rem; font-weight: 700;}
+        .sos-desc { margin: 0 0 25px 0; font-size: 0.9rem; color: var(--text-muted); }
         .sos-list { display: flex; flex-direction: column; gap: 10px; }
         .sos-item { display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.05); padding: 14px 18px; border-radius: 16px; border: 1px solid var(--border-glow); color: var(--text-main); text-decoration: none; transition: background 0.2s;}
         .sos-item:active { background: rgba(255,255,255,0.1); }
         .sos-item-left { display: flex; align-items: center; gap: 14px; font-size: 0.95rem; font-weight: 500;}
         .sos-item i { font-size: 1.4rem; color: var(--text-muted); }
         .sos-item strong { font-family: 'Poppins', sans-serif; font-size: 1.2rem; color: var(--primary); }
+        
+        .btn-close-modal { width: 100%; margin-top: 20px; padding: 14px; border: none; background: rgba(255,255,255,0.1); color: white; border-radius: 14px; font-family: 'Poppins', sans-serif; font-weight: 600; cursor: pointer; transition: background 0.2s;}
+        .btn-close-modal:active { background: rgba(255,255,255,0.2); }
 
-        @media (max-width: 380px) {
-            .btn-enter { padding: 12px 24px; font-size: 0.9rem; }
-            header { padding: 0.6rem 1rem; }
+        /* =========================================
+           MEDIA QUERIES PARA CELULARES CHICOS 
+           ========================================= */
+        @media (max-width: 420px) {
+            header { top: 40px; left: 10px; padding: 0.6rem 1rem; }
+            header h1 { font-size: 1rem; }
+            
+            .weather-widget { top: 40px; padding: 6px 12px; font-size: 0.8rem; }
+            
+            .fab-container { top: 40px; right: 10px; gap: 8px; }
             .btn-fab { padding: 10px; font-size: 1.2rem; }
-            .sheet-desc { font-size: 0.85rem; }
-            .vibe-tag, .tag-sello { font-size: 0.65rem; padding: 4px 10px; }
-            .marker-pill { font-size: 0.75rem; padding: 4px 12px 4px 4px; }
-            .ai-fab { padding: 12px 16px; font-size: 0.8rem; }
+            
+            .ai-fab { bottom: 80px; right: 10px; padding: 12px 16px; font-size: 0.85rem; }
+            
+            .nav-filters { bottom: 15px; left: 10px; width: calc(100% - 20px); padding: 8px; gap: 6px; }
+            .btn-filter { padding: 8px 12px; font-size: 0.75rem; }
+            
             .sheet-hero { height: 200px; }
+            .sheet-title { font-size: 1.3rem; }
+            .sheet-content-wrapper { padding: 0 16px; margin-top: -30px; }
+        }
+
+        /* Para pantallas MUY chicas (iPhone SE, etc) */
+        @media (max-width: 360px) {
+            header { max-width: 120px; padding: 0.5rem; }
+            header p { display: none; } /* Oculta texto secundario para no chocar */
+            
+            .weather-widget { top: 40px; left: 55%; padding: 6px 10px; font-size: 0.75rem; }
+            
+            /* El botón de IA se vuelve una esfera flotante para ahorrar espacio */
+            .ai-fab .fab-text { display: none; } 
+            .ai-fab { padding: 14px; border-radius: 50%; bottom: 70px; right: 10px;}
+            .ai-fab i { font-size: 1.6rem; margin: 0; }
+            
+            .nav-filters { padding: 6px; bottom: 10px; border-radius: 16px;}
+            .btn-filter { font-size: 0.7rem; padding: 6px 10px; }
+            
+            .marker-pill { font-size: 0.75rem; padding: 4px 10px 4px 4px; }
+            .pill-thumb { width: 24px; height: 24px; }
+            
+            .sheet-hero { height: 160px; }
         }
     </style>
 </head>
@@ -245,6 +272,7 @@
         </div>
     </div>
 
+    <!-- WIDGET CLIMA EN VIVO -->
     <div class="weather-widget" id="weather-widget">
         <i class="ph-fill ph-sun"></i> 28°C
     </div>
@@ -267,17 +295,19 @@
     </header>
 
     <div class="fab-container" id="fab-container">
-        <!-- BOTÓN SOS COMPLETAMENTE RESTAURADO -->
+        <!-- BOTÓN SOS -->
         <button class="btn-fab btn-sos" onclick="abrirSOS()">
             <i class="ph-fill ph-phone-call"></i>
         </button>
+        <!-- BOTÓN CAPAS DEL MAPA -->
         <button class="btn-fab btn-layer" onclick="toggleMapLayer()">
             <i class="ph-fill ph-globe-hemisphere-west" id="layer-icon"></i>
         </button>
     </div>
 
+    <!-- BOTÓN MAGIA IA (Texto ocultable en responsive) -->
     <button class="ai-fab" id="ai-fab-btn" onclick="abrirModalIA()">
-        <i class="ph-fill ph-sparkle"></i> Ruta Mágica IA
+        <i class="ph-fill ph-sparkle"></i> <span class="fab-text">Ruta Mágica IA</span>
     </button>
 
     <div class="nav-filters" id="nav-filters">
@@ -286,13 +316,13 @@
         <button class="btn-filter" data-cat="historia">🚶‍♂️ Paseos Clásicos</button>
         <button class="btn-filter" data-cat="familia">👨‍👩‍👧 Plan Familiar</button>
         <button class="btn-filter" data-cat="noche">🍻 Vida Nocturna</button>
-        <button class="btn-filter" data-cat="movida">🚴‍♀️ En Bici</button>
     </div>
 
     <div id="map"></div>
 
     <div id="sheet-overlay" onclick="cerrarPanel()"></div>
     
+    <!-- BOTTOM SHEET HERO -->
     <div id="bottom-sheet">
         <div class="sheet-hero" id="sheet-hero">
             <div class="sheet-handle"></div>
@@ -309,6 +339,15 @@
             </div>
             
             <p class="sheet-desc" id="sheet-desc">Descripción</p>
+            
+            <div class="audio-player" id="audio-guide-panel">
+                <button class="audio-play-btn" id="audio-btn" onclick="toggleAudio()"><i class="ph-fill ph-play"></i></button>
+                <div class="audio-details">
+                    <span class="audio-title" id="audio-title">Relato Histórico</span>
+                    <span class="audio-subtitle"><span id="audio-time">0:00</span><span>1:45</span></span>
+                    <div class="audio-progress-bar"><div class="audio-progress-fill" id="audio-fill"></div></div>
+                </div>
+            </div>
 
             <div class="sheet-tags-vibe" id="sheet-vibe-tags"></div>
             
@@ -323,19 +362,20 @@
         </div>
     </div>
 
+    <!-- MODAL INTELIGENCIA ARTIFICIAL -->
     <div id="ai-modal" onclick="cerrarModalIA()">
-        <div class="ai-content" onclick="event.stopPropagation()">
+        <div class="modal-content-box modal-content-ai" onclick="event.stopPropagation()">
             <div class="ai-header"><i class="ph-fill ph-sparkle"></i> Radar AI</div>
             <div class="ai-text" id="ai-text-container"><span class="cursor"></span></div>
-            <button class="btn-close-ai" onclick="cerrarModalIA()">Cerrar Asistente</button>
+            <button class="btn-close-modal" onclick="cerrarModalIA()">Cerrar Asistente</button>
         </div>
     </div>
 
-    <!-- MODAL DE EMERGENCIAS Y SERVICIOS COMPLETAMENTE RESTAURADO -->
+    <!-- MODAL DE EMERGENCIAS Y SERVICIOS -->
     <div id="sos-modal" onclick="cerrarSOS()">
-        <div class="sos-content" onclick="event.stopPropagation()">
-            <h3><i class="ph-fill ph-warning-circle"></i> Líneas de Asistencia</h3>
-            <p>Directorio oficial de emergencias y atención al visitante en Posadas.</p>
+        <div class="modal-content-box" onclick="event.stopPropagation()">
+            <div class="sos-header"><i class="ph-fill ph-warning-circle"></i> Líneas de Asistencia</div>
+            <p class="sos-desc">Directorio oficial de emergencias y atención al visitante en Posadas.</p>
             <div class="sos-list">
                 <a href="tel:911" class="sos-item">
                     <div class="sos-item-left"><i class="ph-fill ph-police-car"></i> Policía / Emergencia</div>
@@ -357,12 +397,12 @@
                     <div class="sos-item-left"><i class="ph-fill ph-hand-palm" style="color: #a855f7;"></i> Violencia de Género</div>
                     <strong style="color: #a855f7;">137</strong>
                 </a>
-                <a href="tel:+5493764578395" class="sos-item">
-                    <div class="sos-item-left"><i class="ph-fill ph-whatsapp-logo" style="color: #10b981;"></i> Turismo (Inscripciones)</div>
+                <a href="https://wa.me/5493764578395" target="_blank" class="sos-item" style="border-color: rgba(16, 185, 129, 0.4);">
+                    <div class="sos-item-left"><i class="ph-fill ph-whatsapp-logo" style="color: #10b981;"></i> Turismo (WhatsApp)</div>
                     <i class="ph ph-arrow-up-right" style="color: var(--primary);"></i>
                 </a>
             </div>
-            <button class="btn-close-ai" onclick="cerrarSOS()" style="margin-top: 20px;">Cerrar Panel</button>
+            <button class="btn-close-modal" onclick="cerrarSOS()">Cerrar Panel</button>
         </div>
     </div>
 
@@ -406,17 +446,15 @@
         function abrirSOS() { document.getElementById('sos-modal').classList.add('active'); }
         function cerrarSOS() { document.getElementById('sos-modal').classList.remove('active'); }
 
-        // --- AGENDA DE LOS FLYERS Y DIRECTORIO PERMANENTE ---
+        // --- AGENDA DE LOS FLYERS Y DIRECTORIO ---
         let places = [
-            // EVENTOS DESTACADOS
             { id: 201, name: "Paseo: Parque Paraguayo", shortName: "P. Paraguayo", address: "Frente al Museo Aníbal Cambas", coords: [-27.3585, -55.8940], desc: "Paseo guiado conociendo la historia y tradición del lugar. Sábado 8 de Agosto | 16 hs. Inscribite al (376) 4578395. Se suspende por lluvia.", moods: ["historia", "familia", "mates"], vibes: ["🚶‍♂️ Paseo Guiado", "🌳 Historia y Tradición"], selloLocal: true },
             { id: 202, name: "Paseo: Jardín Botánico", shortName: "J. Botánico", address: "SUM del Jardín Botánico", coords: [-27.4080, -55.8830], desc: "Recorrido guiado por la naturaleza de la ciudad. Domingo 9 y 23 de Agosto | 16 hs. Inscribite al (376) 4578395. Se suspende por lluvia.", moods: ["familia", "mates", "historia"], vibes: ["🚶‍♂️ Paseo Guiado", "🍃 Naturaleza Pura"], selloLocal: true },
             { id: 203, name: "Paseo: Bajada Vieja", shortName: "Bajada Vieja", address: "Monumento Andrés Guacurarí", coords: [-27.3565, -55.8902], desc: "Recorrido por el histórico barrio del Mensú. Sábado 15 de Agosto | 16 hs. Inscribite al (376) 4578395. Se suspende por lluvia.", moods: ["historia", "mates"], vibes: ["🚶‍♂️ Paseo Guiado", "📸 Patrimonio"], selloLocal: true },
             { id: 204, name: "Paseo: Casco Histórico", shortName: "Casco Histórico", address: "Plaza 9 de Julio (Colón y Bolívar)", coords: [-27.3660, -55.8965], desc: "Caminata por el centro histórico de la ciudad. Domingo 16 de Agosto | 16 hs. Inscribite al (376) 4578395. Se suspende por lluvia.", moods: ["historia", "familia"], vibes: ["🚶‍♂️ Paseo Guiado", "🏛️ Arquitectura local"], selloLocal: true },
-            { id: 205, name: "Murales en Bici + Luna Llena", shortName: "Murales en Bici", address: "Puesto EcoBicis (4to Tramo)", coords: [-27.3638, -55.8870], desc: "Paseo nocturno en bicicleta recorriendo murales bajo la luna llena. Viernes 28 de Agosto | 18 hs. Inscribite al (376) 4578395. Se suspende por lluvia.", moods: ["noche", "movida"], vibes: ["🚴‍♀️ Paseo en Bici", "🌕 Especial Luna Llena"], selloLocal: true },
+            { id: 205, name: "Murales en Bici + Luna Llena", shortName: "Murales en Bici", address: "Puesto EcoBicis (4to Tramo)", coords: [-27.3638, -55.8870], desc: "Paseo nocturno en bicicleta recorriendo murales bajo la luna llena. Viernes 28 de Agosto | 18 hs. Inscribite al (376) 4578395. Se suspende por lluvia.", moods: ["noche"], vibes: ["🚴‍♀️ Paseo en Bici", "🌕 Especial Luna Llena"], selloLocal: true },
             { id: 206, name: "Paseo: Cementerio Nocturno", shortName: "Cementerio", address: "Pórtico Cementerio La Piedad", coords: [-27.3850, -55.9120], desc: "Paseo guiado nocturno conociendo los mitos y la historia de La Piedad. Sábado 29 de Agosto | 18 hs. Inscribite al (376) 4578395. Se suspende por lluvia.", moods: ["historia", "noche"], vibes: ["🚶‍♂️ Paseo Guiado", "🌙 Especial Nocturno"], selloLocal: true },
             
-            // LUGARES PERMANENTES COMERCIALES
             { id: 104, name: "Catamarán Mburucuyá", shortName: "Catamarán", address: "Muelle de la Costanera", coords: [-27.3591, -55.8893], desc: "Paseo por el río Paraná con excelentes vistas panorámicas a Encarnación.", moods: ["mates", "familia"], vibes: ["🌅 Buen atardecer", "🧉 A tomar mates"], selloLocal: false },
             { id: 106, name: "Centro de Información", shortName: "Info Turística", address: "4to Tramo Costanera", coords: [-27.3639, -55.8875], desc: "Punto de atención al visitante, con mapas, folletería e internet WiFi gratis.", moods: ["indoor", "historia"], vibes: ["🗺️ Mapas de la ciudad", "🌐 WiFi libre"], selloLocal: false },
             { id: 107, name: "Holy Cervecería", shortName: "Holy Bar", address: "Coronel López 2138", coords: [-27.3625, -55.8880], desc: "Patio cervecero frente al río. Excelente opción para cenar o arrancar la noche con amigos.", moods: ["noche", "mates"], vibes: ["🍻 Cerveza Artesanal", "🔊 Buena música"], selloLocal: false }
@@ -521,7 +559,7 @@
             const container = document.getElementById('ai-text-container');
             container.innerHTML = '<span class="cursor"></span>';
             
-            const textoObj = "Analizando la Agenda Oficial...\n\nAcá tenés una ruta sugerida según los próximos eventos:\n\n📍 Sábado 15 | 16:00 hs - Paseo guiado por la Bajada Vieja.\n📍 Viernes 28 | 18:00 hs - Recorrida nocturna de Murales en Bici bajo la luna llena.\n📍 Sábado 29 | 18:00 hs - Mitos e historia en el Cementerio Nocturno.\n\nRecordá inscribirte al 4578395.";
+            const textoObj = "Analizando la Agenda Oficial...\n\nAcá tenés una ruta sugerida según los próximos eventos:\n\n📍 Sábado 15 | 16:00 hs - Paseo guiado por la Bajada Vieja.\n📍 Viernes 28 | 18:00 hs - Recorrida nocturna de Murales en Bici bajo la luna llena.\n📍 Sábado 29 | 18:00 hs - Mitos e historia en el Cementerio Nocturno.\n\nRecordá inscribirte por WhatsApp al 4578395.";
             
             let i = 0;
             clearInterval(aiTypingInterval);
