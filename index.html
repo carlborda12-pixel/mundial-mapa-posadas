@@ -2,517 +2,1525 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Radar Posadas | Experiencia Minimalista</title>
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Posadas Vive · Guía viva de la ciudad</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;900&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700;9..144,900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-
     <style>
         :root {
-            --bg-color: #12100e; 
-            --text-main: #fcfbf9;
-            --text-muted: #a8a29e;
-            --glass-color: rgba(28, 25, 23, 0.75);
-            --glass-dark: rgba(20, 17, 15, 0.95);
-            --border-glow: rgba(255, 255, 255, 0.15); 
-            --shadow: 0 8px 25px rgba(0,0,0,0.6);
-            --primary: #c2410c; 
-            --accent: #047857; 
-            --tourist: #d97706; 
-            --fire-red: #b91c1c; 
-            --tag-bg: rgba(255,255,255,0.08);
-            --vibe-bg: rgba(4, 120, 87, 0.25);
-            --bounce: cubic-bezier(0.25, 1.2, 0.5, 1);
+            --paper: #0f0b08;
+            --paper-2: #17110c;
+            --card: #1e1712;
+            --card-2: #261d15;
+            --ink: #fdf9f2;
+            --muted: #b3a493;
+            --line: rgba(255,255,255,0.08);
+            --river: #37b5a4;     /* verde río Paraná */
+            --sunset: #f5943d;    /* atardecer costanera */
+            --sunset-deep: #d65a1a;
+            --gold: #e8c37e;      /* dorado editorial */
+            --jungle: #57ab66;    /* selva misionera */
+            --mate: #86ab60;      /* mate/yerba */
+            --clay: #c25e3a;      /* tierra colorada */
+            --purple: #b06cf7;
+            --red: #e05656;
+            --shadow: 0 26px 70px rgba(0,0,0,0.6);
+            --shadow-sm: 0 10px 28px rgba(0,0,0,0.45);
+            --ease: cubic-bezier(0.22, 1, 0.36, 1);
+            --bounce: cubic-bezier(0.25, 1.4, 0.5, 1);
         }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        html, body { margin: 0; padding: 0; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background:
+            radial-gradient(120% 60% at 80% -5%, rgba(245,148,61,0.16), transparent 55%),
+            radial-gradient(110% 55% at -10% 8%, rgba(55,181,164,0.12), transparent 55%),
+            var(--paper);
+            color: var(--ink); height: 100vh; height: 100dvh; overflow: hidden; }
+        button, a { appearance: none; -webkit-appearance: none; border: none; background: none; cursor: pointer; text-decoration: none; color: inherit; font-family: inherit; }
+        h1,h2,h3 { font-family: 'Fraunces', serif; margin: 0; }
+        ::-webkit-scrollbar { width: 0; height: 0; }
 
-        * { box-sizing: border-box; }
-        button, a { -webkit-appearance: none; appearance: none; -webkit-tap-highlight-color: transparent; text-decoration: none;}
-        body { margin: 0; padding: 0; font-family: 'Roboto', sans-serif; background-color: var(--bg-color); color: var(--text-main); overflow: hidden; height: 100vh; height: 100dvh; }
+        /* ================= SPLASH ================= */
+        #splash { position: fixed; inset: 0; z-index: 9999; display: flex; flex-direction: column; justify-content: flex-end; overflow: hidden; transition: opacity 0.7s var(--ease), visibility 0.7s; }
+        #splash.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+        .splash-photo { position: absolute; inset: 0; background-size: cover; background-position: center; transform: scale(1.08); animation: slowzoom 12s ease-in-out infinite alternate; }
+        @keyframes slowzoom { to { transform: scale(1.2); } }
+        .splash-grad { position: absolute; inset: 0; background: linear-gradient(to top, var(--paper) 4%, rgba(15,11,8,0.5) 42%, rgba(15,11,8,0.08) 100%); }
+        .splash-body { position: relative; z-index: 2; padding: 0 28px calc(42px + env(safe-area-inset-bottom)); }
+        .splash-kicker { display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.08); border: 1px solid rgba(232,195,126,0.45); color: var(--gold); padding: 7px 15px; border-radius: 30px; font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; backdrop-filter: blur(8px); }
+        .splash-title { font-size: 3.7rem; font-weight: 900; line-height: 0.92; margin: 20px 0 12px; letter-spacing: -1.5px; }
+        .splash-title em { font-style: italic; font-weight: 500; background: linear-gradient(100deg, var(--gold), var(--sunset)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+        .splash-sub { color: #e5d9c8; font-size: 1.02rem; line-height: 1.55; max-width: 320px; margin-bottom: 30px; font-weight: 500; }
+        .splash-enter { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; background: linear-gradient(120deg, var(--gold), var(--sunset)); color: #2a1405; padding: 18px; border-radius: 20px; font-weight: 800; font-size: 1.02rem; box-shadow: 0 16px 40px rgba(245,148,61,0.4); }
+        .splash-enter i { font-size: 1.1rem; }
 
-        /* --- MAPA --- */
-        #map { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; height: 100dvh; z-index: 1; transition: filter 0.4s ease, transform 0.4s ease; background-color: #12100e;}
-        .map-focus { filter: brightness(0.5) contrast(1.1) sepia(0.3) hue-rotate(-15deg); transform: scale(0.96) translateY(-2%); border-radius: 20px; }
-        .map-satellite.map-focus { filter: brightness(0.7) contrast(1.1); }
-        .leaflet-control-container { display: none; }
+        /* ================= APP SHELL ================= */
+        #app { height: 100dvh; display: flex; flex-direction: column; }
+        .view { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; display: none; }
+        .view.active { display: block; animation: fade 0.4s var(--ease); }
+        @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 
-        /* --- UI LAYER --- */
-        /* Al quitar el ticker, podemos subir todo el UI Layer para aprovechar la pantalla completa */
-        .ui-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; height: 100dvh; z-index: 1000; pointer-events: none; display: flex; flex-direction: column; justify-content: space-between; padding-bottom: 20px; }
-        .ui-layer > * { pointer-events: auto; }
+        /* ================= APP HEADER ================= */
+        .app-head { position: sticky; top: 0; z-index: 40; padding: calc(20px + env(safe-area-inset-top)) 18px 18px; background: linear-gradient(to bottom, var(--paper) 62%, transparent); }
+        .app-head.over-map { position: fixed; left: 0; right: 0; z-index: 600; background: linear-gradient(to bottom, rgba(15,11,8,0.85) 30%, rgba(15,11,8,0.35) 75%, transparent); }
+        .head-row { display: flex; align-items: center; justify-content: space-between; }
+        .brand { display: flex; align-items: center; gap: 8px; }
+        .brand-mark { width: 38px; height: 38px; border-radius: 12px; background: linear-gradient(140deg, var(--gold), var(--clay)); display: flex; align-items: center; justify-content: center; font-size: 1.15rem; color: #2a1405; box-shadow: 0 6px 16px rgba(214,90,26,0.4); }
+        .brand-name { font-family: 'Fraunces', serif; font-weight: 900; font-size: 1.3rem; line-height: 1; letter-spacing: -0.5px; }
+        .brand-name span { background: linear-gradient(100deg, var(--gold), var(--sunset)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+        .brand-sub { font-size: 0.66rem; color: var(--muted); font-weight: 700; letter-spacing: 0.8px; margin-top: 3px; text-transform: uppercase; }
+        .head-actions { display: flex; gap: 8px; align-items: center; }
+        .ico-btn { width: 38px; height: 38px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--line); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; font-size: 1.05rem; color: var(--ink); }
+        .ico-btn.sos { color: var(--red); border-color: rgba(224,86,86,0.35); }
+        .weather-inline { display: flex; align-items: center; gap: 6px; font-size: 0.82rem; font-weight: 800; color: var(--gold); background: rgba(232,195,126,0.1); border: 1px solid rgba(232,195,126,0.2); padding: 8px 12px; border-radius: 14px; }
+        .weather-inline i { color: #f6b73c; font-size: 0.95rem; }
 
-        /* --- TOP SECTION (Rediseñado para estar más arriba) --- */
-        .ui-top-section { display: flex; justify-content: space-between; align-items: flex-start; padding: 15px; gap: 10px; transition: transform 0.4s var(--bounce); }
-        .ui-top-section.ui-hidden { transform: translateY(-150%); }
+        /* ================= FEED / AGENDA ================= */
+        .feed { padding: 4px 18px 130px; }
+        .feed-hero { position: relative; border-radius: 30px; overflow: hidden; height: 300px; box-shadow: var(--shadow); margin-bottom: 26px; }
+        .feed-hero img { width: 100%; height: 100%; object-fit: cover; transition: transform 6s var(--ease); }
+        .feed-hero:active img { transform: scale(1.06); }
+        .feed-hero-grad { position: absolute; inset: 0; background: linear-gradient(to top, rgba(15,11,8,0.96) 0%, rgba(15,11,8,0.25) 55%, transparent 100%); }
+        .feed-hero-body { position: absolute; left: 0; right: 0; bottom: 0; padding: 24px; }
+        .feed-hero-tag { display: inline-flex; align-items: center; gap: 6px; background: rgba(232,195,126,0.92); color: #2a1405; padding: 6px 13px; border-radius: 20px; font-size: 0.68rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+        .feed-hero-title { font-family: 'Fraunces', serif; font-size: 2rem; font-weight: 900; line-height: 1.02; margin: 13px 0 6px; max-width: 300px; letter-spacing: -0.5px; }
+        .feed-hero-meta { color: #eaddce; font-size: 0.88rem; font-weight: 600; display: flex; align-items: center; gap: 6px; }
 
-        header { background: var(--glass-color); backdrop-filter: blur(16px); padding: 0.8rem 1rem; border-radius: 16px; border: 1px solid var(--border-glow); box-shadow: var(--shadow); border-left: 4px solid var(--primary); flex-shrink: 1; display: flex; flex-direction: column; justify-content: center;}
-        header h1 { margin: 0; font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 1.1rem; line-height: 1.2;}
-        header h1 span { color: var(--tourist); }
-        header p { margin: 2px 0 0 0; font-size: 0.75rem; color: var(--text-muted); font-weight: 400; }
+        .greet { font-family: 'Fraunces', serif; font-size: 1.7rem; font-weight: 700; margin-bottom: 4px; letter-spacing: -0.6px; }
+        .greet em { font-style: italic; background: linear-gradient(100deg, var(--gold), var(--sunset)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+        .greet-sub { color: var(--muted); font-size: 0.92rem; margin-bottom: 22px; }
 
-        .top-right-controls { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; flex-shrink: 0;}
-        .weather-widget { background: rgba(20, 17, 15, 0.85); backdrop-filter: blur(16px); padding: 8px 14px; border-radius: 20px; border: 1px solid var(--border-glow); color: #fff; font-family: 'Poppins', sans-serif; font-size: 0.8rem; font-weight: 600; display: flex; align-items: center; gap: 8px; box-shadow: var(--shadow);}
-        .weather-widget i { color: #fbbf24; font-size: 1.1rem; }
-        .fab-container { display: flex; flex-direction: column; gap: 10px; }
-        .btn-fab { background: var(--glass-color); padding: 12px; font-size: 1.3rem; border-radius: 16px; box-shadow: var(--shadow); display: flex; align-items: center; justify-content: center; backdrop-filter: blur(16px); border: 1px solid var(--border-glow); color: var(--text-main); cursor: pointer;}
-        .btn-sos { color: var(--fire-red); border-color: rgba(185, 28, 28, 0.4); }
+        /* chips de intención (mood) */
+        .moods { display: flex; gap: 9px; overflow-x: auto; padding-bottom: 6px; margin: 0 -18px 26px; padding-left: 18px; padding-right: 18px; scroll-snap-type: x proximity; }
+        .mood { flex-shrink: 0; scroll-snap-align: start; padding: 10px 14px; border-radius: 30px; background: rgba(255,255,255,0.04); border: 1px solid var(--line); font-weight: 700; font-size: 0.82rem; display: flex; align-items: center; gap: 6px; white-space: nowrap; transition: all 0.25s var(--ease); backdrop-filter: blur(8px); }
+        .mood.active { background: linear-gradient(120deg, var(--gold), var(--sunset)); color: #2a1405; border-color: transparent; box-shadow: 0 8px 20px rgba(245,148,61,0.4); }
+        .mood .emo { font-size: 0.9rem; }
 
-        /* --- BOTTOM SECTION --- */
-        .ui-bottom-section { display: flex; flex-direction: column; align-items: flex-end; padding: 0 15px; gap: 12px; transition: transform 0.4s var(--bounce); }
-        .ui-bottom-section.ui-hidden { transform: translateY(150%); }
+        /* Timeline */
+        .tl-group { margin-bottom: 36px; }
+        .tl-head { display: flex; align-items: center; gap: 11px; margin-bottom: 20px; }
+        .tl-dot { width: 13px; height: 13px; border-radius: 50%; background: var(--sunset); box-shadow: 0 0 0 5px rgba(245,148,61,0.18); flex-shrink: 0; }
+        .tl-dot.finde { background: var(--river); box-shadow: 0 0 0 5px rgba(55,181,164,0.18); }
+        .tl-dot.pronto { background: var(--jungle); box-shadow: 0 0 0 5px rgba(87,171,102,0.18); }
+        .tl-label { font-family: 'Fraunces', serif; font-weight: 700; font-size: 1.3rem; letter-spacing: -0.3px; }
+        .tl-count { font-size: 0.72rem; color: var(--gold); font-weight: 700; background: rgba(232,195,126,0.1); padding: 4px 11px; border-radius: 20px; }
+        .tl-rail { position: relative; }
 
-        .ai-fab { background: linear-gradient(45deg, #c2410c, #d97706, #047857, #c2410c); background-size: 300% 300%; animation: gradientMove 4s ease infinite; color: white; border: 1px solid rgba(255,255,255,0.3); padding: 12px 18px; border-radius: 30px; font-family: 'Poppins', sans-serif; font-size: 0.9rem; font-weight: 700; display: flex; align-items: center; gap: 8px; box-shadow: 0 8px 20px rgba(217, 119, 6, 0.4); cursor: pointer;}
-        .ai-fab i { font-size: 1.3rem; animation: starPulse 1.5s infinite alternate;}
-        @keyframes gradientMove { 0% {background-position: 0% 50%;} 50% {background-position: 100% 50%;} 100% {background-position: 0% 50%;} }
-        @keyframes starPulse { 0% {transform: scale(1);} 100% {transform: scale(1.2);} }
+        /* Event card (postal editorial, foto grande a pantalla) */
+        .ev { position: relative; display: block; border-radius: 26px; overflow: hidden; margin-bottom: 20px; box-shadow: var(--shadow-sm); transition: transform 0.3s var(--ease); min-height: 280px; animation: cardIn 0.6s var(--ease) both; }
+        @keyframes cardIn { from { opacity: 0; transform: translateY(34px) scale(0.96); } to { opacity: 1; transform: none; } }
+        .ev:active { transform: scale(0.98); }
+        .ev-thumb { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 5s var(--ease); }
+        .ev:active .ev-thumb { transform: scale(1.05); }
+        .ev-shade { position: absolute; inset: 0; background: linear-gradient(to top, rgba(15,11,8,0.95) 4%, rgba(15,11,8,0.4) 45%, rgba(15,11,8,0.05) 100%); }
+        .ev-top { position: absolute; top: 15px; left: 15px; right: 15px; display: flex; justify-content: space-between; align-items: flex-start; }
+        .ev-body { position: absolute; left: 0; right: 0; bottom: 0; padding: 22px; display: flex; flex-direction: column; }
+        .ev-when { display: inline-flex; align-items: center; gap: 6px; color: #2a1405; background: rgba(232,195,126,0.95); padding: 5px 11px; border-radius: 20px; font-weight: 800; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.6px; align-self: flex-start; }
+        .ev-title { font-family: 'Fraunces', serif; font-weight: 700; font-size: 1.55rem; line-height: 1.08; margin: 12px 0 7px; letter-spacing: -0.4px; max-width: 90%; }
+        .ev-loc { color: #d8cbbb; font-size: 0.82rem; display: flex; align-items: center; gap: 5px; margin-bottom: 12px; font-weight: 600; }
+        .ev-loc i { font-size: 0.85rem; color: var(--gold); }
+        .ev-foot { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+        .ev-dist { display: inline-flex; align-items: center; gap: 4px; color: var(--river); font-weight: 800; font-size: 0.72rem; background: rgba(55,181,164,0.12); border: 1px solid rgba(55,181,164,0.25); padding: 4px 9px; border-radius: 12px; margin-bottom: 6px; align-self: flex-start; }
+        .ev-dist i { font-size: 0.78rem; }
+        .pill { font-size: 0.68rem; font-weight: 700; padding: 5px 11px; border-radius: 20px; display: inline-flex; align-items: center; gap: 4px; backdrop-filter: blur(8px); }
+        .pill-free { background: rgba(87,171,102,0.28); color: #a8e6b3; }
+        .pill-audio { background: rgba(245,148,61,0.24); color: #ffcaa0; }
+        .pill-cupo { background: rgba(224,86,86,0.24); color: #f0a4a4; }
+        .pill-hour { background: rgba(255,255,255,0.14); color: #f0e6d8; }
 
-        .nav-filters { width: 100%; background: var(--glass-color); backdrop-filter: blur(20px); padding: 8px; border-radius: 20px; box-shadow: var(--shadow); border: 1px solid var(--border-glow); display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; }
-        .nav-filters::-webkit-scrollbar { display: none; }
-        .btn-filter { padding: 10px 14px; border: 1px solid transparent; border-radius: 14px; background: rgba(255,255,255,0.05); cursor: pointer; font-family: 'Poppins', sans-serif; font-weight: 500; font-size: 0.8rem; color: #d6d3d1; white-space: nowrap; display: flex; align-items: center; gap: 6px;}
-        .btn-filter.active { background: var(--primary); color: white; font-weight: 600; box-shadow: 0 4px 12px rgba(194, 65, 12, 0.4);}
-
-        /* --- PINES DEL MAPA --- */
-        .leaflet-marker-icon { background: none; border: none; }
-        .custom-pill-icon { display: flex; justify-content: center; align-items: flex-end; }
-        .marker-pill { display: inline-flex; align-items: center; gap: 8px; background: rgba(15, 12, 10, 0.9); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.2); padding: 4px 12px 4px 4px; border-radius: 30px; color: #fff; font-family: 'Poppins', sans-serif; font-size: 0.8rem; font-weight: 600; box-shadow: 0 6px 15px rgba(0,0,0,0.6); white-space: nowrap; transform-origin: center bottom;}
-        .pill-thumb { width: 26px; height: 26px; border-radius: 50%; object-fit: cover; border: 2px solid transparent; }
-        .pill-hot .pill-thumb { border-color: var(--tourist); box-shadow: 0 0 8px rgba(217, 119, 6, 0.6); }
-        .marker-appear { animation: popIn 0.5s var(--bounce) both; }
-        @keyframes popIn { 0% { opacity: 0; transform: scale(0.3) translateY(30px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
-
-        /* --- OVERLAY Y BOTTOM SHEET --- */
-        #sheet-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; height: 100dvh; background: rgba(0,0,0,0.7); z-index: 1009; opacity: 0; visibility: hidden; transition: opacity 0.4s; backdrop-filter: blur(3px);}
-        #sheet-overlay.active { opacity: 1; visibility: visible; }
-
-        #bottom-sheet { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--glass-dark); backdrop-filter: blur(30px); border-top-left-radius: 28px; border-top-right-radius: 28px; box-shadow: 0 -15px 50px rgba(0,0,0,0.9); z-index: 1010; padding: 0 0 24px 0; max-height: 85vh; max-height: 85dvh; overflow-y: auto; transform: translateY(120%); transition: transform 0.5s var(--bounce); }
-        #bottom-sheet.open { transform: translateY(0); }
-        
-        .sheet-hero { width: 100%; height: 220px; background-size: cover; background-position: center; position: relative; border-top-left-radius: 28px; border-top-right-radius: 28px; flex-shrink: 0;}
-        .sheet-hero-overlay { position: absolute; bottom: 0; left: 0; width: 100%; height: 70%; background: linear-gradient(to top, rgba(20, 17, 15, 1) 0%, rgba(20, 17, 15, 0.8) 40%, transparent 100%);}
-        .sheet-handle { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); width: 45px; height: 5px; background: rgba(255,255,255,0.8); border-radius: 5px; z-index: 3;}
-        .sheet-close { position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); color: #fff; width: 36px; height: 36px; border-radius: 50%; display: flex; justify-content: center; align-items: center; z-index: 3;}
-        
-        .sheet-content-wrapper { padding: 0 20px; position: relative; margin-top: -30px; z-index: 2; display: flex; flex-direction: column; gap: 8px;}
-        .sheet-title { font-family: 'Poppins', sans-serif; font-size: 1.4rem; font-weight: 700; color: white; margin: 0; line-height: 1.1; text-shadow: 0 2px 10px rgba(0,0,0,0.8);}
-        .sheet-info-row { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--text-muted); font-weight: 500;}
-        .sheet-info-row i { color: var(--tourist); font-size: 1.2rem;}
-        .distance-badge { background: rgba(255,255,255,0.15); color: #fff; padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; font-family: 'Poppins', sans-serif;}
-        .sheet-desc { font-size: 0.95rem; color: #e7e5e4; line-height: 1.5; font-weight: 300; margin: 0;}
-
-        /* REPRODUCTOR DE AUDIO REAL */
-        .audio-player { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 12px; display: none; align-items: center; gap: 12px; margin-top: 5px; }
-        .audio-player.active { display: flex; }
-        .audio-play-btn { background: var(--tourist); color: #000; border: none; border-radius: 50%; width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; font-size: 1.2rem;}
-        .audio-details { flex-grow: 1; display: flex; flex-direction: column;}
-        .audio-title { font-family: 'Poppins', sans-serif; font-size: 0.8rem; font-weight: 600; color: white;}
-        .audio-progress-bar { width: 100%; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-top: 4px;}
-        .audio-progress-fill { width: 0%; height: 100%; background: var(--tourist); transition: width 0.1s linear;}
-
-        .sheet-tags-vibe { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 5px;}
-        .vibe-tag { background: var(--vibe-bg); border: 1px solid rgba(4, 120, 87, 0.4); color: #34d399; font-size: 0.7rem; border-radius: 16px; padding: 4px 10px;}
-        .tag-sello { background: linear-gradient(45deg, rgba(194, 65, 12, 0.2), rgba(217, 119, 6, 0.2)); border: 1px solid var(--tourist); color: var(--tourist); font-weight: 700; border-radius: 16px; padding: 4px 10px; font-size: 0.7rem;}
-        
-        .btn-group { display: flex; gap: 10px; margin-top: 10px;}
-        .btn-alentar { flex: 2; background: var(--primary); color: white; border: none; padding: 14px; border-radius: 14px; font-family: 'Poppins', sans-serif; font-weight: 600; display: flex; justify-content: center; align-items: center; gap: 8px;}
-        .btn-alentar.confirmado { background: var(--accent); }
-        .btn-share { flex: 1; background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 14px; border-radius: 14px; font-weight: 500; display: flex; justify-content: center; align-items: center;}
-
-        /* --- MODALES --- */
-        #ai-modal, #sos-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; height: 100dvh; background: rgba(0,0,0,0.85); z-index: 2000; opacity: 0; visibility: hidden; transition: opacity 0.3s; display: flex; justify-content: center; align-items: center; padding: 15px;}
-        #ai-modal.active, #sos-modal.active { opacity: 1; visibility: visible; }
-        .modal-content-box { background: var(--glass-dark); border: 1px solid var(--border-glow); border-radius: 24px; padding: 25px 20px; width: 100%; max-width: 360px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); transform: scale(0.95); transition: transform 0.3s var(--bounce); max-height: 90dvh; overflow-y: auto;}
-        .modal-content-ai { border-color: var(--tourist); }
-        #ai-modal.active .modal-content-box, #sos-modal.active .modal-content-box { transform: scale(1); }
-        
-        /* Filtros IA */
-        .ai-chips-container { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 15px; }
-        .ai-chip { background: rgba(255,255,255,0.08); border: 1px solid var(--tourist); color: white; padding: 6px 12px; border-radius: 20px; font-family: 'Poppins', sans-serif; font-size: 0.8rem; cursor: pointer; transition: all 0.2s;}
-        .ai-chip:active { background: var(--tourist); color: black; transform: scale(0.95);}
-
-        .sos-header { font-family: 'Poppins', sans-serif; margin: 0 0 5px 0; color: var(--fire-red); display: flex; align-items: center; gap: 8px; font-size: 1.2rem; font-weight: 700;}
-        .sos-desc { margin: 0 0 20px 0; font-size: 0.85rem; color: var(--text-muted); }
-        .sos-list { display: flex; flex-direction: column; gap: 8px; }
-        .sos-item { display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.05); padding: 12px 14px; border-radius: 14px; border: 1px solid var(--border-glow); color: var(--text-main);}
-        .sos-item-left { display: flex; align-items: center; gap: 10px; font-size: 0.9rem; font-weight: 500;}
-        .sos-item i { font-size: 1.3rem; color: var(--text-muted); }
-        .sos-item strong { font-family: 'Poppins', sans-serif; font-size: 1.1rem; color: var(--primary); }
-        .btn-close-modal { width: 100%; margin-top: 15px; padding: 12px; border: none; background: rgba(255,255,255,0.1); color: white; border-radius: 12px; font-family: 'Poppins', sans-serif; font-weight: 600; }
-
-        /* --- SPLASH SCREEN --- */
-        #splash-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; background: #12100e; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.6s, visibility 0.6s; overflow: hidden; }
-        #splash-screen.hidden { opacity: 0; visibility: hidden; pointer-events: none;}
-        .mesh-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; overflow: hidden; }
-        .mesh-blob-1 { position: absolute; top: -10%; left: -20%; width: 70vw; height: 70vw; border-radius: 50%; background: radial-gradient(circle, rgba(194, 65, 12, 0.4) 0%, transparent 60%); filter: blur(60px); animation: float1 10s ease-in-out infinite alternate; }
-        .mesh-blob-2 { position: absolute; bottom: -10%; right: -20%; width: 80vw; height: 80vw; border-radius: 50%; background: radial-gradient(circle, rgba(4, 120, 87, 0.3) 0%, transparent 60%); filter: blur(60px); animation: float2 12s ease-in-out infinite alternate; }
-        @keyframes float1 { 100% { transform: translate(30vw, 20vh) scale(1.2); } }
-        @keyframes float2 { 100% { transform: translate(-30vw, -20vh) scale(1.1); } }
-        
-        .splash-content { text-align: center; padding: 40px 20px; z-index: 10; width: 85%; max-width: 320px; display: flex; flex-direction: column; align-items: center; gap: 15px; background: rgba(20, 17, 15, 0.4); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border-radius: 32px; border-top: 1px solid rgba(255,255,255,0.15); border-left: 1px solid rgba(255,255,255,0.15); box-shadow: 0 16px 40px rgba(0,0,0,0.8); }
-        .hype-title { font-family: 'Poppins', sans-serif; font-size: 2.5rem; font-weight: 900; margin: 0; color: white; line-height: 1.1; text-transform: uppercase; text-shadow: 0 4px 10px rgba(0,0,0,0.5);}
-        .splash-subtitle { font-size: 0.9rem; color: var(--tourist); margin: 0; font-family: 'Poppins', sans-serif; letter-spacing: 2px; text-transform: uppercase; font-weight: 600;}
-        .btn-enter { background: var(--primary); color: white; border: none; padding: 14px 30px; border-radius: 30px; font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 1rem; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; box-shadow: 0 8px 25px rgba(194, 65, 12, 0.5);}
-
-        /* --- MEDIA QUERIES (Ultra compactas) --- */
-        @media (max-width: 380px) {
-            .ui-top-section { padding: 10px; }
-            header { padding: 0.6rem; max-width: 130px;}
-            header h1 { font-size: 0.9rem; }
-            header p { display: none; }
-            
-            /* Clima centrado pero un poco corrido para no chocar */
-            .weather-widget { padding: 6px 10px; font-size: 0.75rem; position: static; transform: none;}
-            .top-right-controls { flex-direction: row; align-items: flex-start;}
-            .fab-container { flex-direction: row; gap: 8px; }
-            
-            .btn-fab { padding: 8px; font-size: 1.2rem;}
-            
-            .ai-fab span { display: none; } 
-            .ai-fab { padding: 12px; border-radius: 50%; }
-            .nav-filters { padding: 6px; border-radius: 14px;}
-            .btn-filter { font-size: 0.75rem; padding: 8px 10px;}
-            
-            .splash-content { padding: 30px 15px; }
-            .hype-title { font-size: 2rem; }
-        }
+        .feed-foot { text-align: center; color: var(--muted); font-size: 0.82rem; padding: 14px 0 4px; line-height: 1.7; }
+        .feed-foot strong { color: var(--mate); }
     </style>
 </head>
+
+<style>
+    /* ================= MAP VIEW (EXPLORAR) ================= */
+    #map-view { position: relative; padding: 0; }
+    #map { position: absolute; inset: 0; z-index: 1; background: #0f0b08; }
+    .leaflet-control-container, .leaflet-control-attribution { display: none !important; }
+    /* vignette to make it feel curated, not a raw google map */
+    .map-vignette { position: absolute; inset: 0; z-index: 2; pointer-events: none;
+        background:
+            radial-gradient(130% 90% at 50% 40%, transparent 55%, rgba(15,11,8,0.55) 100%),
+            linear-gradient(to bottom, rgba(15,11,8,0.55) 0%, transparent 22%, transparent 55%, rgba(15,11,8,0.75) 100%); }
+
+    .map-topbar { position: absolute; top: calc(76px + env(safe-area-inset-top)); left: 12px; right: 12px; z-index: 500; display: flex; flex-direction: column; gap: 9px; }
+    .mode-seg { display: inline-flex; align-self: flex-start; gap: 4px; background: rgba(15,11,8,0.72); backdrop-filter: blur(18px); border: 1px solid var(--line); border-radius: 16px; padding: 5px; box-shadow: var(--shadow-sm); }
+    .mode-btn { padding: 9px 16px; border-radius: 12px; font-weight: 800; font-size: 0.82rem; color: var(--muted); display: flex; align-items: center; gap: 6px; transition: all 0.25s var(--ease); }
+    .mode-btn i { font-size: 0.95rem; }
+    .mode-btn.active { background: linear-gradient(120deg, var(--gold), var(--sunset)); color: #2a1405; box-shadow: 0 6px 16px rgba(245,148,61,0.35); }
+
+    .route-tabs { display: none; gap: 8px; overflow-x: auto; padding: 5px; background: rgba(15,11,8,0.72); backdrop-filter: blur(16px); border: 1px solid var(--line); border-radius: 18px; }
+    .route-tabs.on { display: flex; animation: fade 0.35s var(--ease); }
+    .route-tab { flex-shrink: 0; padding: 9px 13px; border-radius: 13px; font-weight: 700; font-size: 0.8rem; color: var(--muted); display: flex; align-items: center; gap: 6px; white-space: nowrap; transition: all 0.2s var(--ease); }
+    .route-tab.active { color: var(--ink); }
+    .route-tab.active[data-c="guiados"] { background: var(--sunset); color: #2a1405; }
+    .route-tab.active[data-c="rio"] { background: var(--river); color: #04231f; }
+    .route-tab.active[data-c="noche"] { background: var(--purple); color: #1a0a2e; }
+    .route-tab.active[data-c="verde"] { background: var(--jungle); color: #06210b; }
+
+    /* route info panel (rutas mode) — sits above carousel */
+    .route-info { display: none; position: absolute; left: 12px; right: 12px; bottom: calc(304px + env(safe-area-inset-bottom)); z-index: 500; background: rgba(15,11,8,0.9); backdrop-filter: blur(20px); border: 1px solid var(--line); border-radius: 22px; padding: 13px 16px; box-shadow: var(--shadow); }
+    .route-info.on { display: block; animation: slideUp 0.4s var(--bounce); }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: none; } }
+    .route-info h3 { font-family: 'Fraunces', serif; font-size: 1.2rem; margin-bottom: 3px; }
+    .route-info p { color: var(--muted); font-size: 0.82rem; line-height: 1.4; margin: 0; }
+    .route-info .rt-meta { display: flex; gap: 14px; margin-top: 10px; font-size: 0.78rem; font-weight: 700; }
+    .route-info .rt-meta span { display: flex; align-items: center; gap: 5px; }
+    .route-info .rt-meta i { font-size: 0.95rem; }
+
+    .layer-toggle { position: absolute; right: 12px; z-index: 500; top: calc(76px + env(safe-area-inset-top)); width: 38px; height: 38px; border-radius: 12px; background: rgba(15,11,8,0.8); backdrop-filter: blur(14px); border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
+
+    /* locate-me button */
+    .locate-btn { position: absolute; right: 12px; z-index: 500; top: calc(122px + env(safe-area-inset-top)); width: 38px; height: 38px; border-radius: 12px; background: rgba(15,11,8,0.8); backdrop-filter: blur(14px); border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: var(--ink); transition: background 0.25s, color 0.25s; }
+    .locate-btn.active { background: rgba(55,181,164,0.25); border-color: rgba(55,181,164,0.5); color: var(--river); }
+    .locate-btn.locating i { animation: locate-spin 1s linear infinite; }
+    @keyframes locate-spin { to { transform: rotate(360deg); } }
+
+    /* pulsing user marker */
+    .user-marker { position: relative; width: 20px; height: 20px; }
+    .user-dot { width: 14px; height: 14px; background: var(--river); border: 3px solid #fff; border-radius: 50%; position: absolute; top: 3px; left: 3px; box-shadow: 0 2px 8px rgba(55,181,164,0.6); z-index: 2; }
+    .user-pulse { position: absolute; inset: -8px; border-radius: 50%; background: rgba(55,181,164,0.25); animation: user-ping 2s ease-out infinite; }
+    @keyframes user-ping { 0% { transform: scale(0.6); opacity: 1; } 100% { transform: scale(2.2); opacity: 0; } }
+
+    /* ================= MAP CAROUSEL (tarjetitas interactivas) ================= */
+    .map-carousel { position: absolute; left: 0; right: 0; bottom: calc(84px + env(safe-area-inset-bottom)); z-index: 500; display: flex; gap: 12px; overflow-x: auto; padding: 6px 16px 10px; scroll-snap-type: x mandatory; scroll-padding-left: 16px; }
+    .mcard { flex-shrink: 0; width: 250px; scroll-snap-align: start; background: rgba(20,16,12,0.92); backdrop-filter: blur(18px); border: 1px solid var(--line); border-radius: 20px; overflow: hidden; box-shadow: var(--shadow); transition: transform 0.3s var(--ease), border-color 0.3s; animation: mcardIn 0.5s var(--ease) both; }
+    @keyframes mcardIn { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: none; } }
+    .mcard.active { border-color: var(--gold); transform: translateY(-6px); box-shadow: 0 22px 44px rgba(245,148,61,0.28); }
+    .mcard-img { position: relative; height: 108px; }
+    .mcard-img img { width: 100%; height: 100%; object-fit: cover; }
+    .mcard-img .mcard-num { position: absolute; top: 9px; left: 9px; width: 26px; height: 26px; border-radius: 50%; background: var(--gold); color: #2a1405; font-weight: 800; font-size: 0.82rem; display: flex; align-items: center; justify-content: center; border: 2px solid rgba(15,11,8,0.6); }
+    .mcard-img .mcard-badge { position: absolute; top: 9px; right: 9px; background: rgba(15,11,8,0.75); backdrop-filter: blur(6px); color: var(--ink); font-size: 0.62rem; font-weight: 800; padding: 4px 8px; border-radius: 12px; text-transform: uppercase; letter-spacing: 0.4px; }
+    .mcard-img .mcard-grad { position: absolute; inset: 0; background: linear-gradient(to top, rgba(20,16,12,0.9), transparent 60%); }
+    .mcard-body { padding: 11px 13px 13px; }
+    .mcard-t { font-family: 'Fraunces', serif; font-weight: 700; font-size: 1rem; line-height: 1.1; margin-bottom: 3px; }
+    .mcard-loc { color: var(--muted); font-size: 0.72rem; display: flex; align-items: center; gap: 4px; margin-bottom: 10px; }
+    .mcard-loc i { color: var(--gold); font-size: 0.8rem; }
+    .mcard-dist { display: inline-flex; align-items: center; gap: 3px; color: var(--river); font-weight: 800; font-size: 0.66rem; background: rgba(55,181,164,0.12); border: 1px solid rgba(55,181,164,0.25); padding: 3px 7px; border-radius: 10px; margin-top: 6px; }
+    .mcard-dist i { font-size: 0.7rem; }
+    .mcard-dir { display: flex; align-items: center; justify-content: center; gap: 4px; width: 100%; padding: 7px; border-radius: 10px; background: rgba(55,181,164,0.12); color: var(--river); font-weight: 800; font-size: 0.72rem; margin-top: 6px; }
+    .mcard-dir i { font-size: 0.8rem; }
+    .mcard-cta { display: flex; align-items: center; justify-content: center; gap: 5px; width: 100%; padding: 9px; border-radius: 12px; background: rgba(245,148,61,0.14); color: var(--sunset); font-weight: 800; font-size: 0.78rem; }
+    .mcard-cta i { font-size: 0.9rem; }
+
+    /* numbered stop marker */
+    .stop-marker { display: flex; flex-direction: column; align-items: center; }
+    .stop-num { width: 30px; height: 30px; border-radius: 50%; background: var(--sunset); color: #2a1405; font-weight: 800; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; border: 3px solid var(--paper); box-shadow: 0 4px 12px rgba(0,0,0,0.5); font-family: 'Plus Jakarta Sans'; }
+    .stop-num.rio { background: var(--river); color: #04231f; }
+    .stop-num.noche { background: var(--purple); color: #1a0a2e; }
+    .stop-num.verde { background: var(--jungle); color: #06210b; }
+    .stop-tip { margin-top: 5px; background: rgba(15,11,8,0.92); color: #fff; padding: 3px 9px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; white-space: nowrap; border: 1px solid var(--line); font-family: 'Plus Jakarta Sans'; }
+    .leaflet-marker-icon.stopwrap { background: none; border: none; }
+
+    /* place pin marker (lugares mode) */
+    .place-pin { position: relative; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; }
+    .place-pin .pin-dot { width: 38px; height: 38px; border-radius: 50% 50% 50% 8px; transform: rotate(45deg); background: linear-gradient(140deg, var(--gold), var(--sunset)); border: 2px solid rgba(15,11,8,0.55); box-shadow: 0 6px 16px rgba(0,0,0,0.5); transition: transform 0.25s var(--bounce); }
+    .place-pin .pin-ico { position: absolute; color: #2a1405; font-size: 1.15rem; }
+    .place-pin.rio .pin-dot { background: linear-gradient(140deg, #5fd3c3, var(--river)); }
+    .place-pin.noche .pin-dot { background: linear-gradient(140deg, #c48bff, var(--purple)); }
+    .place-pin.verde .pin-dot { background: linear-gradient(140deg, #7fd08c, var(--jungle)); }
+    .place-pin.rio .pin-ico, .place-pin.verde .pin-ico { color: #06210b; }
+    .place-pin.noche .pin-ico { color: #1a0a2e; }
+    .place-pin.active .pin-dot { transform: rotate(45deg) scale(1.22); box-shadow: 0 0 0 8px rgba(245,148,61,0.22), 0 8px 20px rgba(0,0,0,0.55); }
+    .leaflet-marker-icon.pinwrap { background: none; border: none; }
+
+    /* ================= BOTTOM NAV ================= */
+    .tabbar { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(14px + env(safe-area-inset-bottom)); z-index: 1200; display: flex; gap: 4px; background: rgba(28,23,18,0.9); backdrop-filter: blur(24px); border: 1px solid var(--line); border-radius: 22px; padding: 6px; box-shadow: var(--shadow); }
+    .tab { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 22px; border-radius: 16px; color: var(--muted); font-size: 0.66rem; font-weight: 700; }
+    .tab i { font-size: 1.15rem; }
+    .tab.active { background: linear-gradient(120deg, var(--gold), var(--sunset)); color: #2a1405; }
+
+    /* ================= DETAIL SHEET ================= */
+    #overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(3px); z-index: 1500; opacity: 0; visibility: hidden; transition: opacity 0.4s; }
+    #overlay.on { opacity: 1; visibility: visible; }
+    #sheet { position: fixed; left: 0; right: 0; bottom: 0; z-index: 1501; background: var(--paper-2); border-radius: 30px 30px 0 0; box-shadow: 0 -20px 60px rgba(0,0,0,0.7); max-height: 92dvh; overflow-y: auto; transform: translateY(101%); transition: transform 0.5s var(--bounce); }
+    #sheet.on { transform: none; }
+    .sh-hero { position: relative; height: 250px; }
+    .sh-hero img { width: 100%; height: 100%; object-fit: cover; }
+    .sh-hero-grad { position: absolute; inset: 0; background: linear-gradient(to top, var(--paper-2) 2%, rgba(29,23,18,0.3) 50%, transparent 100%); }
+    .sh-handle { position: absolute; top: 11px; left: 50%; transform: translateX(-50%); width: 44px; height: 5px; border-radius: 5px; background: rgba(255,255,255,0.6); }
+    .sh-close { position: absolute; top: 14px; right: 14px; width: 34px; height: 34px; border-radius: 50%; background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; font-size: 1rem; border: 1px solid var(--line); }
+    .sh-hero-tags { position: absolute; left: 20px; bottom: 16px; display: flex; gap: 7px; flex-wrap: wrap; }
+    .sh-body { padding: 4px 22px calc(30px + env(safe-area-inset-bottom)); }
+    .sh-title { font-family: 'Fraunces', serif; font-size: 1.8rem; font-weight: 700; line-height: 1.02; margin-bottom: 8px; letter-spacing: -0.5px; }
+    .sh-meta { display: flex; align-items: center; gap: 7px; color: var(--muted); font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; }
+    .sh-meta i { color: var(--sunset); font-size: 1.15rem; }
+
+    .sh-when { display: flex; gap: 10px; background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 13px 15px; margin: 14px 0; align-items: center; }
+    .sh-when-ico { width: 44px; height: 44px; border-radius: 12px; background: rgba(238,123,48,0.15); color: var(--sunset); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0; }
+    .sh-when-txt strong { display: block; font-family: 'Fraunces', serif; font-size: 1.02rem; }
+    .sh-when-txt span { color: var(--muted); font-size: 0.8rem; }
+    .sh-dist { display: inline-flex; align-items: center; gap: 6px; color: var(--river); font-weight: 800; font-size: 0.82rem; background: rgba(55,181,164,0.1); border: 1px solid rgba(55,181,164,0.22); padding: 8px 14px; border-radius: 14px; margin-bottom: 10px; }
+    .sh-dist i { font-size: 0.9rem; }
+
+    .sh-section-t { font-family: 'Fraunces', serif; font-weight: 700; font-size: 1.08rem; margin: 20px 0 8px; display: flex; align-items: center; gap: 8px; }
+    .sh-section-t i { color: var(--river); }
+    .sh-story { color: #e4d8c8; font-size: 0.98rem; line-height: 1.65; }
+    .sh-fact { background: linear-gradient(135deg, rgba(42,157,143,0.14), rgba(79,157,93,0.1)); border: 1px solid rgba(42,157,143,0.3); border-radius: 16px; padding: 14px 16px; margin-top: 14px; font-size: 0.9rem; line-height: 1.55; color: #d6ece8; }
+    .sh-fact b { color: var(--river); font-family: 'Fraunces', serif; }
+
+    /* audio */
+    .audio { display: none; align-items: center; gap: 13px; background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 12px 14px; margin-top: 14px; }
+    .audio.on { display: flex; }
+    .audio-btn { width: 46px; height: 46px; border-radius: 50%; background: var(--sunset); color: #2a1405; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0; }
+    .audio-info { flex: 1; }
+    .audio-info .at { font-weight: 800; font-size: 0.85rem; }
+    .audio-info .as { color: var(--muted); font-size: 0.72rem; }
+    .audio-bar { height: 4px; background: rgba(255,255,255,0.1); border-radius: 3px; margin-top: 7px; overflow: hidden; }
+    .audio-fill { height: 100%; width: 0; background: var(--sunset); }
+
+    .sh-btns { display: flex; gap: 10px; margin-top: 22px; }
+
+    /* transport mode selector */
+    .dir-modes { display: flex; gap: 6px; margin: 14px 0 10px; }
+    .dir-mode { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 10px 4px; border-radius: 14px; background: var(--card); border: 1.5px solid var(--line); font-size: 0.68rem; font-weight: 700; color: var(--muted); transition: all 0.25s var(--ease); }
+    .dir-mode i { font-size: 1.2rem; }
+    .dir-mode.active { background: rgba(55,181,164,0.15); border-color: var(--river); color: var(--river); }
+    .btn-dir { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 14px; border-radius: 16px; background: linear-gradient(120deg, var(--river), #2ea89a); color: #fff; font-weight: 800; font-size: 0.95rem; box-shadow: 0 10px 28px rgba(55,181,164,0.35); margin-bottom: 12px; }
+    .btn-dir i { font-size: 1.1rem; }
+
+    /* in-app directions panel */
+    .dir-panel { position: absolute; left: 0; right: 0; bottom: calc(84px + env(safe-area-inset-bottom)); z-index: 550; background: rgba(15,11,8,0.95); backdrop-filter: blur(20px); border-top: 1px solid var(--line); border-radius: 22px 22px 0 0; max-height: 45dvh; display: none; flex-direction: column; box-shadow: 0 -10px 40px rgba(0,0,0,0.5); }
+    .dir-panel.on { display: flex; animation: slideUp 0.35s var(--ease); }
+    @keyframes slideUp { from { transform: translateY(100%); } to { transform: none; } }
+    .dir-panel-head { display: flex; align-items: center; gap: 12px; padding: 16px 18px 12px; border-bottom: 1px solid var(--line); }
+    .dir-panel-head .dir-close { width: 32px; height: 32px; border-radius: 10px; background: rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: var(--ink); flex-shrink: 0; }
+    .dir-info { flex: 1; }
+    .dir-info-title { font-family: 'Fraunces', serif; font-weight: 700; font-size: 0.95rem; line-height: 1.1; margin-bottom: 3px; }
+    .dir-info-meta { color: var(--muted); font-size: 0.75rem; font-weight: 600; display: flex; gap: 12px; }
+    .dir-info-meta span { display: flex; align-items: center; gap: 4px; }
+    .dir-info-meta i { color: var(--river); font-size: 0.8rem; }
+    .dir-steps { flex: 1; overflow-y: auto; padding: 10px 18px 18px; -webkit-overflow-scrolling: touch; }
+    .dir-step { display: flex; gap: 12px; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+    .dir-step:last-child { border-bottom: none; }
+    .dir-step-ico { width: 32px; height: 32px; border-radius: 10px; background: rgba(55,181,164,0.12); color: var(--river); display: flex; align-items: center; justify-content: center; font-size: 0.9rem; flex-shrink: 0; }
+    .dir-step-txt { flex: 1; }
+    .dir-step-inst { font-size: 0.82rem; font-weight: 600; line-height: 1.3; color: var(--ink); }
+    .dir-step-dist { font-size: 0.72rem; color: var(--muted); font-weight: 600; margin-top: 2px; }
+    .btn-main { flex: 2; background: linear-gradient(120deg, var(--gold), var(--sunset)); color: #2a1405; padding: 16px; border-radius: 16px; font-weight: 800; font-size: 0.98rem; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 12px 30px rgba(245,148,61,0.35); }
+    .btn-main.saved { background: var(--jungle); color: #06210b; }
+    .btn-main.wapp { background: #25d366; color: #06280f; }
+    .btn-ghost { flex: 0.8; background: var(--card); border: 1px solid var(--line); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; }
+
+    /* ================= MODALS ================= */
+    .modal { position: fixed; inset: 0; z-index: 2000; background: rgba(0,0,0,0.8); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; padding: 18px; opacity: 0; visibility: hidden; transition: opacity 0.3s; }
+    .modal.on { opacity: 1; visibility: visible; }
+    .modal-box { background: var(--paper-2); border: 1px solid var(--line); border-radius: 26px; width: 100%; max-width: 380px; padding: 22px; box-shadow: var(--shadow); transform: scale(0.94); transition: transform 0.3s var(--bounce); max-height: 88dvh; overflow-y: auto; }
+    .modal.on .modal-box { transform: none; }
+    .modal-t { font-size: 1.3rem; font-weight: 800; display: flex; align-items: center; gap: 9px; margin-bottom: 4px; }
+    .modal-t.sos { color: var(--red); }
+
+    .modal-d { color: var(--muted); font-size: 0.85rem; margin-bottom: 16px; line-height: 1.4; }
+    .sos-item { display: flex; align-items: center; justify-content: space-between; background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 13px 15px; margin-bottom: 8px; }
+    .sos-l { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 0.92rem; }
+    .sos-l i { font-size: 1.1rem; color: var(--muted); }
+    .sos-item strong { font-family: 'Fraunces', serif; font-size: 1.15rem; color: var(--sunset); }
+
+    .btn-close { width: 100%; margin-top: 16px; padding: 14px; background: var(--card); border: 1px solid var(--line); border-radius: 14px; font-weight: 700; }
+
+    /* ================= TICKET MODAL ================= */
+    .ticket-overlay { position: fixed; inset: 0; z-index: 2500; background: rgba(0,0,0,0.85); backdrop-filter: blur(6px); display: flex; align-items: flex-end; justify-content: center; opacity: 0; visibility: hidden; transition: opacity 0.3s var(--ease); }
+    .ticket-overlay.on { opacity: 1; visibility: visible; }
+    .ticket-panel { background: var(--paper-2); border: 1px solid var(--line); border-radius: 28px 28px 0 0; width: 100%; max-width: 440px; max-height: 92dvh; overflow-y: auto; padding: 0 0 calc(24px + env(safe-area-inset-bottom)); transform: translateY(100%); transition: transform 0.4s var(--bounce); }
+    .ticket-overlay.on .ticket-panel { transform: none; }
+    .ticket-hero { position: relative; height: 140px; overflow: hidden; border-radius: 28px 28px 0 0; }
+    .ticket-hero img { width: 100%; height: 100%; object-fit: cover; }
+    .ticket-hero-grad { position: absolute; inset: 0; background: linear-gradient(to top, var(--paper-2) 10%, rgba(23,17,12,0.3) 60%, transparent); }
+    .ticket-hero-close { position: absolute; top: 14px; right: 14px; width: 36px; height: 36px; border-radius: 50%; background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; color: var(--ink); font-size: 1.1rem; z-index: 2; }
+    .ticket-body { padding: 4px 22px 0; }
+    .ticket-badge { display: inline-flex; align-items: center; gap: 6px; background: linear-gradient(120deg, var(--gold), var(--sunset)); color: #2a1405; padding: 6px 14px; border-radius: 20px; font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px; }
+    .ticket-name { font-family: 'Fraunces', serif; font-size: 1.5rem; font-weight: 700; line-height: 1.1; margin-bottom: 4px; letter-spacing: -0.4px; }
+    .ticket-when { color: var(--muted); font-size: 0.82rem; margin-bottom: 16px; display: flex; align-items: center; gap: 6px; }
+    .ticket-when i { color: var(--sunset); font-size: 1rem; }
+    .ticket-price-row { display: flex; align-items: center; justify-content: space-between; background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 14px 16px; margin-bottom: 14px; }
+    .ticket-price-label { font-weight: 700; font-size: 0.88rem; color: var(--muted); }
+    .ticket-price-val { font-family: 'Fraunces', serif; font-weight: 700; font-size: 1.15rem; color: var(--gold); }
+    .ticket-qty { display: flex; align-items: center; justify-content: space-between; background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 14px 16px; margin-bottom: 14px; }
+    .ticket-qty-label { font-weight: 700; font-size: 0.88rem; }
+    .ticket-qty-ctrl { display: flex; align-items: center; gap: 14px; }
+    .ticket-qty-btn { width: 38px; height: 38px; border-radius: 12px; background: rgba(255,255,255,0.06); border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: 700; color: var(--ink); transition: background 0.2s; }
+    .ticket-qty-btn:active { background: rgba(232,195,126,0.2); }
+    .ticket-qty-num { font-family: 'Fraunces', serif; font-weight: 700; font-size: 1.3rem; min-width: 28px; text-align: center; }
+    .ticket-input { width: 100%; background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; color: var(--ink); font-family: inherit; font-size: 0.92rem; font-weight: 600; margin-bottom: 10px; outline: none; transition: border-color 0.2s; }
+    .ticket-input::placeholder { color: var(--muted); font-weight: 500; }
+    .ticket-input:focus { border-color: var(--gold); }
+    .ticket-total { display: flex; align-items: center; justify-content: space-between; padding: 16px 0; border-top: 1px solid var(--line); margin-top: 10px; margin-bottom: 6px; }
+    .ticket-total-label { font-weight: 700; font-size: 1rem; }
+    .ticket-total-val { font-family: 'Fraunces', serif; font-weight: 700; font-size: 1.35rem; color: var(--gold); }
+    .ticket-submit { width: 100%; padding: 17px; border-radius: 18px; font-weight: 800; font-size: 1rem; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 14px 36px rgba(245,148,61,0.4); transition: transform 0.2s; margin-top: 4px; }
+    .ticket-submit:active { transform: scale(0.97); }
+    .ticket-submit.pay { background: linear-gradient(120deg, var(--gold), var(--sunset)); color: #2a1405; }
+    .ticket-submit.free { background: linear-gradient(120deg, var(--jungle), var(--river)); color: #04231f; }
+    .ticket-submit i { font-size: 1.2rem; }
+    .ticket-mp-note { text-align: center; color: var(--muted); font-size: 0.72rem; margin-top: 12px; display: flex; align-items: center; justify-content: center; gap: 5px; }
+    .ticket-mp-note i { color: var(--gold); font-size: 0.9rem; }
+    .ticket-success { text-align: center; padding: 30px 10px; }
+    .ticket-success-icon { width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(120deg, var(--jungle), var(--river)); display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin: 0 auto 16px; box-shadow: 0 10px 26px rgba(55,181,164,0.35); }
+    .ticket-success h3 { font-family: 'Fraunces', serif; font-size: 1.4rem; margin-bottom: 8px; }
+    .ticket-success p { color: var(--muted); font-size: 0.88rem; line-height: 1.5; margin-bottom: 20px; }
+    .ticket-success-detail { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; margin-bottom: 18px; text-align: left; font-size: 0.85rem; line-height: 1.7; }
+    .ticket-success-detail strong { color: var(--gold); }
+    .ticket-success .btn-close { margin-top: 0; }
+
+    /* ticket badge on cards */
+    .pill-ticket { background: rgba(232,195,126,0.24); color: var(--gold); }
+    .ev-ticket-dot { position: absolute; top: 15px; right: 15px; width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(120deg, var(--gold), var(--sunset)); display: flex; align-items: center; justify-content: center; font-size: 0.85rem; color: #2a1405; box-shadow: 0 4px 12px rgba(245,148,61,0.5); z-index: 3; animation: ticketPulse 2s ease-in-out infinite; }
+    @keyframes ticketPulse { 0%,100% { box-shadow: 0 4px 12px rgba(245,148,61,0.5); } 50% { box-shadow: 0 4px 20px rgba(245,148,61,0.8); } }
+
+
+
+    @media (max-width: 360px) {
+        .splash-title { font-size: 3rem; }
+        .ev { min-height: 250px; }
+        .ev-title { font-size: 1.35rem; }
+        .tab { padding: 8px 17px; }
+    }
+
+    /* ================= RESPONSIVE DESIGN ================= */
+    /* Small phones (iPhone SE, Galaxy Mini) */
+    @media (max-width: 340px) {
+        .splash-title { font-size: 2.6rem; letter-spacing: -1px; }
+        .splash-sub { font-size: 0.9rem; }
+        .splash-enter { padding: 15px; font-size: 0.92rem; }
+        .brand-name { font-size: 1.1rem; }
+        .brand-mark { width: 34px; height: 34px; font-size: 1rem; }
+        .weather-inline { padding: 6px 10px; font-size: 0.75rem; }
+        .ico-btn { width: 34px; height: 34px; }
+        .ev { min-height: 220px; border-radius: 22px; }
+        .ev-title { font-size: 1.25rem; }
+        .ev-body { padding: 18px; }
+        .ev-when { font-size: 0.62rem; padding: 4px 9px; }
+        .tab { padding: 7px 15px; font-size: 0.6rem; }
+        .tab i { font-size: 1.05rem; }
+        .mcard { width: 220px; }
+        .mcard-img { height: 90px; }
+        .mcard-t { font-size: 0.9rem; }
+        .feed-hero { height: 240px; }
+        .feed-hero-title { font-size: 1.6rem; }
+        .greet { font-size: 1.4rem; }
+        .mode-btn { padding: 7px 12px; font-size: 0.75rem; }
+        .route-tab { padding: 7px 10px; font-size: 0.72rem; }
+    }
+
+    /* Standard phones (iPhone 12/13, Pixel) */
+    @media (min-width: 341px) and (max-width: 428px) {
+        .splash-title { font-size: 3.2rem; }
+        .ev { min-height: 260px; }
+        .mcard { width: 240px; }
+    }
+
+    /* Large phones (iPhone Pro Max, Galaxy Ultra) */
+    @media (min-width: 429px) and (max-width: 480px) {
+        .splash-title { font-size: 3.6rem; }
+        .ev { min-height: 280px; }
+        .mcard { width: 260px; }
+        .feed-hero { height: 320px; }
+    }
+
+    /* Tablets portrait (iPad Mini, iPad) */
+    @media (min-width: 481px) and (max-width: 768px) {
+        .splash-title { font-size: 4.2rem; }
+        .splash-sub { font-size: 1.1rem; max-width: 380px; }
+        .ev { min-height: 320px; border-radius: 30px; }
+        .ev-title { font-size: 1.7rem; }
+        .mcard { width: 280px; }
+        .feed-hero { height: 360px; }
+        .feed-hero-title { font-size: 2.2rem; }
+        .greet { font-size: 2rem; }
+        .tab { padding: 10px 28px; font-size: 0.72rem; }
+        .sheet-body { padding: 6px 32px calc(36px + env(safe-area-inset-bottom)); }
+        .sh-title { font-size: 2rem; }
+        .dir-panel { max-height: 50dvh; }
+    }
+
+    /* Tablets landscape & small desktops */
+    @media (min-width: 769px) and (max-width: 1024px) {
+        .splash-title { font-size: 5rem; }
+        .splash-sub { font-size: 1.2rem; max-width: 420px; }
+        .ev { min-height: 350px; max-width: 480px; margin-left: auto; margin-right: auto; }
+        .ev-title { font-size: 1.8rem; }
+        .mcard { width: 300px; }
+        .feed { padding: 4px 40px 130px; max-width: 600px; margin: 0 auto; }
+        .feed-hero { height: 400px; }
+        .feed-hero-title { font-size: 2.5rem; }
+        .greet { font-size: 2.2rem; }
+        .tab { padding: 10px 32px; font-size: 0.75rem; }
+    }
+
+    /* Touch-friendly targets */
+    @media (pointer: coarse) {
+        .mood { min-height: 44px; min-width: 44px; }
+        .tab { min-height: 44px; }
+        .ico-btn { min-height: 44px; min-width: 44px; }
+        .route-tab { min-height: 44px; }
+        .mode-btn { min-height: 44px; }
+    }
+
+    /* Safe area handling for notched devices */
+    @supports (padding: env(safe-area-inset-top)) {
+        .app-head { padding-top: calc(20px + env(safe-area-inset-top)); }
+        .tabbar { bottom: calc(14px + env(safe-area-inset-bottom)); }
+        .map-carousel { bottom: calc(84px + env(safe-area-inset-bottom)); }
+        .dir-panel { bottom: calc(84px + env(safe-area-inset-bottom)); }
+    }
+
+    /* Dark mode preference */
+    @media (prefers-color-scheme: dark) {
+        :root { color-scheme: dark; }
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+        }
+        .splash-photo { animation: none; }
+    }
+
+    /* Print */
+    @media print {
+        #splash, .tabbar, .map-carousel, .dir-panel, .modal, .ticket-overlay { display: none !important; }
+        .view { display: block !important; }
+        body { background: #fff; color: #000; }
+    }
+</style>
+
 <body>
 
-    <div id="splash-screen">
-        <div class="mesh-bg">
-            <div class="mesh-blob-1"></div>
-            <div class="mesh-blob-2"></div>
-        </div>
-        <div class="splash-content">
-            <h1 class="hype-title">Radar<br>Posadas</h1>
-            <p class="splash-subtitle">Guía Inteligente</p>
-            <button class="btn-enter" onclick="entrarAlMapa()">
-                <i class="ph-fill ph-rocket-launch" style="font-size: 1.2rem;"></i> Iniciar Experiencia
-            </button>
-        </div>
+<!-- ============ SPLASH ============ -->
+<div id="splash">
+    <div class="splash-photo" style="background-image:url('https://public.youware.com/users-website-assets/prod/d9801d5e-b9a5-4695-925c-d937bff38a4f/7ce22f5cf01549289eb4a7d776a8e035')"></div>
+    <div class="splash-grad"></div>
+    <div class="splash-body">
+        <span class="splash-kicker"><i class="ph-fill ph-map-trifold"></i> Guía viva · Misiones</span>
+        <h1 class="splash-title">Posadas<br><em>se vive</em></h1>
+        <p class="splash-sub">No es un mapa: es la agenda de tu ciudad. Qué hay hoy, dónde tomar unos mates y qué paseo no te podés perder.</p>
+        <button class="splash-enter" id="splash-enter-btn">Explorar la ciudad <i class="ph-fill ph-arrow-right"></i></button>
     </div>
+</div>
 
-    <div id="map"></div>
+<div id="app">
 
-    <div class="ui-layer">
-        <div class="ui-top-section" id="ui-top">
-            <header id="main-header">
-                <h1>Radar<span>Posadas</span></h1>
-                <p>Directorio Oficial</p>
-            </header>
-
-            <div class="top-right-controls">
-                <div class="weather-widget" id="weather-widget"><i class="ph-fill ph-sun"></i> 28°C</div>
-                <div class="fab-container">
-                    <button class="btn-fab btn-sos" onclick="abrirSOS()"><i class="ph-fill ph-phone-call"></i></button>
-                    <button class="btn-fab" onclick="toggleMapLayer()"><i class="ph-fill ph-globe-hemisphere-west" id="layer-icon"></i></button>
+    <!-- ============ HEADER ============ -->
+    <div class="app-head">
+        <div class="head-row">
+            <div class="brand">
+                <div class="brand-mark"><i class="ph-fill ph-map-pin"></i></div>
+                <div>
+                    <div class="brand-name">Posadas<span>Vive</span></div>
+                    <div class="brand-sub">Guía viva · Misiones</div>
                 </div>
             </div>
-        </div>
-
-        <div class="ui-bottom-section" id="ui-bottom">
-            <button class="ai-fab" id="ai-fab-btn" onclick="abrirModalIA()">
-                <i class="ph-fill ph-sparkle"></i> <span>Ruta Mágica IA</span>
-            </button>
-
-            <div class="nav-filters" id="nav-filters">
-                <button class="btn-filter active" data-cat="all"><i class="ph-fill ph-compass"></i> Todo</button>
-                <button class="btn-filter" data-cat="mates">🧉 Tarde de Mates</button>
-                <button class="btn-filter" data-cat="historia">🚶‍♂️ Paseos Clásicos</button>
-                <button class="btn-filter" data-cat="familia">👨‍👩‍👧 Plan Familiar</button>
-                <button class="btn-filter" data-cat="noche">🍻 Vida Nocturna</button>
-                <button class="btn-filter" data-cat="movida">🚴‍♀️ En Bici</button>
+            <div class="head-actions">
+                <div class="weather-inline"><i class="ph-fill ph-sun"></i> 28°</div>
+                <button class="ico-btn sos" onclick="openSOS()"><i class="ph-fill ph-first-aid-kit"></i></button>
             </div>
         </div>
     </div>
 
-    <div id="sheet-overlay" onclick="cerrarPanel()"></div>
-    
-    <div id="bottom-sheet">
-        <div class="sheet-hero" id="sheet-hero">
-            <div class="sheet-handle"></div>
-            <button class="sheet-close" onclick="cerrarPanel()"><i class="ph ph-x"></i></button>
-            <div class="sheet-hero-overlay"></div>
-        </div>
-        
-        <div class="sheet-content-wrapper">
-            <h2 class="sheet-title" id="sheet-title">Nombre</h2>
-            
-            <div class="sheet-info-row">
-                <i class="ph-fill ph-map-pin"></i> <span id="sheet-address">Dirección</span>
-                <span class="distance-badge" id="sheet-distance">🚗 5 min</span>
-            </div>
-            
-            <p class="sheet-desc" id="sheet-desc">Descripción</p>
+    <!-- ============ VIEW: EXPLORAR (MAPA INTERACTIVO) ============ -->
+    <div class="view active" id="view-explore">
+        <div id="map-view" style="position:absolute; inset:0;">
+            <div id="map"></div>
+            <div class="map-vignette"></div>
 
-            <div class="audio-player" id="audio-guide-panel">
-                <button class="audio-play-btn" id="audio-btn" onclick="toggleAudio()">
-                    <i class="ph-fill ph-play"></i>
-                </button>
-                <div class="audio-details">
-                    <span class="audio-title" id="audio-title">Relato Histórico</span>
-                    <div class="audio-progress-bar">
-                        <div class="audio-progress-fill" id="audio-fill"></div>
+            <div class="map-topbar">
+                <div class="mode-seg">
+                    <button class="mode-btn active" data-mode="lugares" onclick="setMapMode('lugares')"><i class="ph-fill ph-map-pin"></i> Lugares</button>
+                    <button class="mode-btn" data-mode="rutas" onclick="setMapMode('rutas')"><i class="ph-fill ph-path"></i> Rutas</button>
+                </div>
+                <div class="route-tabs" id="route-tabs">
+                    <button class="route-tab active" data-c="guiados" onclick="selectRoute('guiados')">🚶 Guiados</button>
+                    <button class="route-tab" data-c="rio" onclick="selectRoute('rio')">🌅 Del río</button>
+                    <button class="route-tab" data-c="noche" onclick="selectRoute('noche')">🌙 Nocturna</button>
+                    <button class="route-tab" data-c="verde" onclick="selectRoute('verde')">🍃 Verde</button>
+                </div>
+            </div>
+
+            <button class="layer-toggle" onclick="toggleLayer()"><i class="ph-fill ph-globe-hemisphere-west" id="layer-ico"></i></button>
+            <button class="locate-btn" id="locate-btn" onclick="locateUser()" title="Mi ubicación"><i class="ph-fill ph-crosshair"></i></button>
+
+            <div class="route-info" id="route-info"></div>
+
+            <div class="map-carousel" id="map-carousel"></div>
+
+            <div class="dir-panel" id="dir-panel">
+                <div class="dir-panel-head">
+                    <button class="dir-close" onclick="closeDirPanel()"><i class="ph ph-x"></i></button>
+                    <div class="dir-info">
+                        <div class="dir-info-title" id="dir-title"></div>
+                        <div class="dir-info-meta">
+                            <span><i class="ph-fill ph-ruler"></i> <span id="dir-dist"></span></span>
+                            <span><i class="ph-fill ph-clock"></i> <span id="dir-dur"></span></span>
+                        </div>
                     </div>
                 </div>
-            </div>
-
-            <div class="sheet-tags-vibe" id="sheet-vibe-tags"></div>
-            
-            <div class="btn-group">
-                <button id="btn-alentar" class="btn-alentar" onclick="sumarVisita()"><i class="ph-fill ph-bookmark-simple"></i> Agendar Visita</button>
-                <button id="btn-share" class="btn-share" onclick="compartirLocal()"><i class="ph-fill ph-share-network"></i></button>
+                <div class="dir-steps" id="dir-steps"></div>
             </div>
         </div>
     </div>
 
-    <div id="ai-modal" onclick="cerrarModalIA()">
-        <div class="modal-content-box modal-content-ai" onclick="event.stopPropagation()">
-            <div class="sos-header" style="color: var(--tourist); margin-bottom: 15px;"><i class="ph-fill ph-sparkle"></i> Radar AI</div>
-            
-            <div class="ai-chips-container" id="ai-options">
-                <button class="ai-chip" onclick="generarRuta('hoy')">Para Hoy</button>
-                <button class="ai-chip" onclick="generarRuta('finde')">Este Finde</button>
-                <button class="ai-chip" onclick="generarRuta('mes')">Todo el Mes</button>
-            </div>
+    <!-- ============ VIEW: AGENDA (FEED) ============ -->
+    <div class="view" id="view-agenda">
+        <div class="feed">
+            <div class="feed-hero" id="feed-hero"></div>
 
-            <div style="font-size: 0.9rem; line-height: 1.5; color: #e7e5e4;" id="ai-text-container">
-                Seleccioná cuándo querés salir y te armo el plan ideal...
-            </div>
-            <button class="btn-close-modal" onclick="cerrarModalIA()">Cerrar Asistente</button>
+            <div class="greet">Bienvenido a <em>Posadas</em> ✨</div>
+            <div class="greet-sub">La ciudad del río Paraná te espera. Esto es lo que se vive hoy.</div>
+
+            <div class="moods" id="moods"></div>
+
+            <div id="timeline"></div>
+
+            <p class="feed-foot">Agenda curada por <strong>Turismo Posadas</strong><br>Reservas al WhatsApp 3764-578395</p>
         </div>
     </div>
 
-    <div id="sos-modal" onclick="cerrarSOS()">
-        <div class="modal-content-box" onclick="event.stopPropagation()">
-            <div class="sos-header"><i class="ph-fill ph-warning-circle"></i> Asistencia</div>
-            <p class="sos-desc">Directorio oficial de emergencias y atención en Posadas.</p>
-            <div class="sos-list">
-                <a href="tel:911" class="sos-item"><div class="sos-item-left"><i class="ph-fill ph-police-car"></i> Policía</div><strong>911</strong></a>
-                <a href="tel:107" class="sos-item"><div class="sos-item-left"><i class="ph-fill ph-ambulance"></i> Salud</div><strong>107</strong></a>
-                <a href="tel:100" class="sos-item"><div class="sos-item-left"><i class="ph-fill ph-fire-extinguisher"></i> Bomberos</div><strong>100</strong></a>
-                <a href="tel:103" class="sos-item"><div class="sos-item-left"><i class="ph-fill ph-lifebuoy"></i> Defensa Civil</div><strong>103</strong></a>
-                <a href="tel:137" class="sos-item" style="border-color: rgba(168, 85, 247, 0.4);"><div class="sos-item-left"><i class="ph-fill ph-hand-palm" style="color: #a855f7;"></i> Violencia Género</div><strong style="color: #a855f7;">137</strong></a>
-                <a href="https://wa.me/5493764578395" target="_blank" class="sos-item" style="border-color: rgba(16, 185, 129, 0.4);"><div class="sos-item-left"><i class="ph-fill ph-whatsapp-logo" style="color: #10b981;"></i> Turismo (WhatsApp)</div><i class="ph ph-arrow-up-right" style="color: var(--primary);"></i></a>
+    <!-- ============ TABBAR ============ -->
+    <div class="tabbar">
+        <button class="tab active" data-v="explore" onclick="switchView('explore')"><i class="ph-fill ph-map-trifold"></i> Explorar</button>
+        <button class="tab" data-v="agenda" onclick="switchView('agenda')"><i class="ph-fill ph-calendar-blank"></i> Agenda</button>
+    </div>
+</div>
+
+<!-- ============ DETAIL SHEET ============ -->
+<div id="overlay" onclick="closeSheet()"></div>
+<div id="sheet">
+    <div class="sh-hero">
+        <img id="sh-img" src="" alt="">
+        <div class="sh-hero-grad"></div>
+        <div class="sh-handle"></div>
+        <button class="sh-close" onclick="closeSheet()"><i class="ph ph-x"></i></button>
+        <div class="sh-hero-tags" id="sh-tags"></div>
+    </div>
+    <div class="sh-body">
+        <h2 class="sh-title" id="sh-title"></h2>
+        <div class="sh-meta"><i class="ph-fill ph-map-pin"></i> <span id="sh-addr"></span></div>
+        <div class="sh-when" id="sh-when"></div>
+        <div class="sh-dist" id="sh-dist"></div>
+
+        <div class="dir-modes" id="dir-modes">
+            <button class="dir-mode active" data-mode="driving" onclick="setDirMode('driving')"><i class="ph-fill ph-car-profile"></i> Auto</button>
+            <button class="dir-mode" data-mode="motorcycle" onclick="setDirMode('motorcycle')"><i class="ph-fill ph-motorcycle"></i> Moto</button>
+            <button class="dir-mode" data-mode="bicycling" onclick="setDirMode('bicycling')"><i class="ph-fill ph-bicycle"></i> Bici</button>
+            <button class="dir-mode" data-mode="walking" onclick="setDirMode('walking')"><i class="ph-fill ph-person-walking"></i> A pie</button>
+        </div>
+        <button class="btn-dir" id="btn-dir" onclick="openDirections()"><i class="ph-fill ph-navigation-arrow"></i> Cómo llegar</button>
+
+        <div class="sh-section-t"><i class="ph-fill ph-book-open-text"></i> La historia</div>
+        <p class="sh-story" id="sh-story"></p>
+        <div class="sh-fact" id="sh-fact"></div>
+        <div class="audio" id="audio">
+            <button class="audio-btn" id="audio-btn" onclick="toggleAudio()"><i class="ph-fill ph-play"></i></button>
+            <div class="audio-info">
+                <div class="at" id="audio-title">Audioguía</div>
+                <div class="as">Relato narrado · 2 min</div>
+                <div class="audio-bar"><div class="audio-fill" id="audio-fill"></div></div>
             </div>
-            <button class="btn-close-modal" onclick="cerrarSOS()">Cerrar Panel</button>
+        </div>
+        <div class="sh-btns">
+            <button class="btn-main" id="btn-main" onclick="mainAction()"></button>
+            <button class="btn-ghost" onclick="shareItem()"><i class="ph-fill ph-share-network"></i></button>
         </div>
     </div>
+</div>
 
-    <script>
-        function entrarAlMapa() { document.getElementById('splash-screen').classList.add('hidden'); }
+<!-- ============ SOS MODAL ============ -->
+<div class="modal" id="sos-modal" onclick="closeSOS()">
+    <div class="modal-box" onclick="event.stopPropagation()">
+        <div class="modal-t sos"><i class="ph-fill ph-first-aid-kit"></i> Asistencia</div>
+        <p class="modal-d">Directorio oficial de emergencias y atención en Posadas.</p>
+        <a href="tel:911" class="sos-item"><div class="sos-l"><i class="ph-fill ph-police-car"></i> Policía</div><strong>911</strong></a>
+        <a href="tel:107" class="sos-item"><div class="sos-l"><i class="ph-fill ph-ambulance"></i> Salud</div><strong>107</strong></a>
+        <a href="tel:100" class="sos-item"><div class="sos-l"><i class="ph-fill ph-fire-extinguisher"></i> Bomberos</div><strong>100</strong></a>
+        <a href="tel:103" class="sos-item"><div class="sos-l"><i class="ph-fill ph-lifebuoy"></i> Defensa Civil</div><strong>103</strong></a>
+        <a href="tel:137" class="sos-item"><div class="sos-l"><i class="ph-fill ph-hand-palm" style="color:var(--purple)"></i> Violencia de género</div><strong style="color:var(--purple)">137</strong></a>
+        <a href="https://wa.me/5493764578395" target="_blank" class="sos-item"><div class="sos-l"><i class="ph-fill ph-whatsapp-logo" style="color:#25d366"></i> Turismo (WhatsApp)</div><i class="ph ph-arrow-up-right" style="color:var(--sunset)"></i></a>
+        <button class="btn-close" onclick="closeSOS()">Cerrar</button>
+    </div>
+</div>
 
-        const map = L.map('map', { zoomControl: false, tap: false }).setView([-27.375, -55.900], 13.5);
-        const layerDark = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', { maxZoom: 19 });
-        const layerSatellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19 });
-        layerDark.addTo(map);
+<!-- ============ TICKET MODAL ============ -->
+<div class="ticket-overlay" id="ticket-overlay" onclick="closeTicketModal()">
+    <div class="ticket-panel" onclick="event.stopPropagation()">
+        <div class="ticket-hero">
+            <img id="ticket-img" src="" alt="">
+            <div class="ticket-hero-grad"></div>
+            <button class="ticket-hero-close" onclick="closeTicketModal()"><i class="ph ph-x"></i></button>
+        </div>
+        <div class="ticket-body" id="ticket-body">
+            <span class="ticket-badge" id="ticket-badge"><i class="ph-fill ph-ticket"></i> Comprar entrada</span>
+            <h2 class="ticket-name" id="ticket-name"></h2>
+            <div class="ticket-when" id="ticket-when"></div>
+            <div class="ticket-price-row" id="ticket-price-row">
+                <span class="ticket-price-label">Precio por entrada</span>
+                <span class="ticket-price-val" id="ticket-price-val"></span>
+            </div>
+            <div class="ticket-qty" id="ticket-qty-row">
+                <span class="ticket-qty-label">Cantidad de entradas</span>
+                <div class="ticket-qty-ctrl">
+                    <button class="ticket-qty-btn" onclick="ticketQty(-1)">−</button>
+                    <span class="ticket-qty-num" id="ticket-qty-num">1</span>
+                    <button class="ticket-qty-btn" onclick="ticketQty(1)">+</button>
+                </div>
+            </div>
+            <input class="ticket-input" id="ticket-name-input" type="text" placeholder="Nombre completo" autocomplete="name">
+            <input class="ticket-input" id="ticket-email-input" type="email" placeholder="Email" autocomplete="email">
+            <input class="ticket-input" id="ticket-phone-input" type="tel" placeholder="Celular (opcional)" autocomplete="tel">
+            <div class="ticket-total" id="ticket-total-row">
+                <span class="ticket-total-label">Total</span>
+                <span class="ticket-total-val" id="ticket-total-val"></span>
+            </div>
+            <button class="ticket-submit pay" id="ticket-submit" onclick="submitTicket()"><i class="ph-fill ph-credit-card"></i> <span id="ticket-submit-text">Pagar con Mercado Pago</span></button>
+            <div class="ticket-mp-note" id="ticket-mp-note"><i class="ph-fill ph-shield-check"></i> Pago seguro vía Mercado Pago</div>
+        </div>
+    </div>
+</div>
 
-        let isSatellite = false;
-        function toggleMapLayer() {
-            isSatellite = !isSatellite;
-            const icon = document.getElementById('layer-icon');
-            const mapEl = document.getElementById('map');
-            if(isSatellite) {
-                map.removeLayer(layerDark); layerSatellite.addTo(map);
-                icon.className = 'ph-fill ph-map-trifold'; mapEl.classList.add('map-satellite');
-            } else {
-                map.removeLayer(layerSatellite); layerDark.addTo(map);
-                icon.className = 'ph-fill ph-globe-hemisphere-west'; mapEl.classList.remove('map-satellite');
-            }
-        }
+<script>
+const CDN = 'https://public.youware.com/users-website-assets/prod/d9801d5e-b9a5-4695-925c-d937bff38a4f/';
+const IMG = {
+  costanera: CDN+'7ce22f5cf01549289eb4a7d776a8e035',
+  cementerio: CDN+'578538ec9a874dc4a02c43101eb5233f',
+  holy: CDN+'19683d2ce21149ff84bd5c4032de2d27',
+  bajada: CDN+'dba54949e8ea4575969059e4eab819cc.jpg',
+  jardin: CDN+'956cf2fe09b245cdb459b6f1d833f7de.jpeg',
+  casco: CDN+'1ba0b659ee4d45ebbc04932f16bbf5eb.jpg',
+  catamaran: CDN+'466b6076366545c5841f3708a9fbc7ae.jpg',
+  parque: CDN+'068282e1e2994c28bc1d999bd825d687.jpg',
+  murales: CDN+'75def1ac6a6948edb582ad988b881b0f.jpeg',
+  arte: CDN+'4dcca128579e40cc9301c9dd3c112fbb.jpeg',
+  catedral: CDN+'ed4d7756d242411e9051c9c98c76af25',
+  conocimiento: CDN+'09f382909b3f4d4eb422103cbaf60fee',
+  brete: CDN+'6a4619b9ea2a4d9a91273d4cac1d5bc1',
+  feria: CDN+'0ad42ba0e22c4c33b06883c68402ed25',
+  mirador: CDN+'df8cbcfd02d549468b69db33d009495b'
+};
 
-        function abrirSOS() { document.getElementById('sos-modal').classList.add('active'); }
-        function cerrarSOS() { document.getElementById('sos-modal').classList.remove('active'); }
+// ============ DATA MODEL (honesto: agenda real, sin distancias inventadas) ============
+const PLACES = [
+  {
+    id:'catamaran', type:'lugar', group:'hoy', order:1,
+    name:'Atardecer en Catamarán', addr:'Muelle 4to tramo, Costanera',
+    img:IMG.catamaran, coords:[-27.3591,-55.8893],
+    when:{label:'Todos los días · 18:30 hs', sub:'Zarpa al caer el sol', ico:'ph-boat'},
+    moods:['mates','rio'], routes:['rio'],
+    tags:[['🌅 Atardecer','river'],['🍵 Ideal mates','mate']],
+    price:'Desde $4.500', cupo:null, wapp:true,
+    ticketType:'paid', ticketPrice:4500,
+    story:'El clásico posadeño de manual: subirse al catamarán cuando el sol se hunde detrás de Encarnación y el Paraná se pinta de naranja. Cuarenta minutos de río, camalotes flotando y la mejor postal del Puente San Roque González.',
+    fact:'El río Paraná es el segundo más largo de Sudamérica. Desde acá ves dos países en una sola foto: Argentina y Paraguay.',
+    audio:'El Paraná contado desde el agua'
+  },
+  {
+    id:'costanera', type:'lugar', group:'hoy', order:2,
+    name:'Mates en la Costanera', addr:'Costanera Monseñor Kemerer',
+    img:IMG.costanera, coords:[-27.36100941979234, -55.88905070985583],
+    when:{label:'Siempre abierta · Gratis', sub:'El living de la ciudad', ico:'ph-sun-horizon'},
+    moods:['mates','familia'], routes:['rio'],
+    tags:[['🍵 Ritual local','mate'],['🆓 Gratis','free']],
+    price:'Gratis', cupo:null, wapp:false,
+    story:'No hay plan más posadeño que sentarse en el pasto de la Costanera con el termo bajo el brazo. Al atardecer se llena de familias, ciclistas y grupos cebando mate frente al río. Traé reposera y disfrutá el show del cielo.',
+    fact:'La Costanera tiene más de 15 km sobre el Paraná. La ampliación borró para siempre las viejas casas del río, pero la Bajada Vieja quedó como testigo.',
+    audio:null
+  },
+  {
+    id:'holy', type:'lugar', group:'hoy', order:3,
+    name:'Noche en Holy Cervecería', addr:'Coronel López 2138',
+    img:IMG.holy, coords:[-27.358764547152962, -55.89043815282248],
+    when:{label:'Todas las noches · 20 hs', sub:'Patio cervecero frente al río', ico:'ph-beer-stein'},
+    moods:['noche'], routes:['noche','rio'],
+    tags:[['🍻 Birra artesanal','sunset'],['🎶 Música en vivo','']],
+    price:'Pinta desde $2.800', cupo:null, wapp:false,
+    ticketType:'paid', ticketPrice:2800,
+    story:'Para arrancar la noche posadeña: patio al aire libre, pintas artesanales de la región y música que se estira hasta tarde. Los viernes hay bandas en vivo y la barra no descansa.',
+    fact:'Misiones vive un boom cervecero: el clima subtropical y el agua de la zona le dan un perfil único a las birras artesanales locales.',
+    audio:null
+  },
+  {
+    id:'casco', type:'evento', group:'finde', order:1,
+    name:'Paseo: Casco Histórico', addr:'Punto de encuentro: Plaza 9 de Julio',
+    img:IMG.casco, coords:[-27.3660,-55.8965],
+    when:{label:'Sábado 22 de agosto · 16 hs', sub:'Duración 90 min · Cupos limitados', ico:'ph-calendar-check'},
+    moods:['historia','familia'], routes:['guiados'],
+    tags:[['🏛️ Patrimonio','sunset'],['🎧 Audioguía','audio'],['🆓 Gratis','free']],
+    price:'Gratis con inscripción', cupo:'20 cupos', wapp:true,
+    ticketType:'free_reg',
+    story:'Una caminata guiada por el corazón fundacional de Posadas. Arranca en la Plaza 9 de Julio, frente a la Catedral, y recorre los edificios que cuentan cómo una aldea a orillas del Paraná se transformó en capital provincial.',
+    fact:'Posadas se llamó "Trinchera de San José" antes de adoptar su nombre actual en homenaje a Gervasio Antonio de Posadas, primer Director Supremo de las Provincias Unidas.',
+    audio:'Arquitectura posadeña, edificio por edificio'
+  },
+  {
+    id:'jardin', type:'evento', group:'finde', order:2,
+    name:'Paseo: Jardín Botánico', addr:'SUM del Jardín Botánico A. Roth',
+    img:IMG.jardin, coords:[-27.408679010488967, -55.89676324525683],
+    when:{label:'Domingo 23 de agosto · 16 hs', sub:'Duración 60 min · Apto niños', ico:'ph-calendar-check'},
+    moods:['familia','mates','historia'], routes:['verde'],
+    tags:[['🍃 Naturaleza','free'],['🎧 Audioguía','audio'],['👨‍👩‍👧 Familiar','']],
+    price:'Gratis con inscripción', cupo:'30 cupos', wapp:true,
+    ticketType:'free_reg',
+    story:'Un recorrido guiado por el pulmón verde de la ciudad. Especies nativas de la selva misionera, senderos a la sombra y un guardián que te cuenta el legado de Alberto Roth, el creador de este oasis urbano.',
+    fact:'El Jardín Botánico de Posadas ya superó los 45 años. Conserva especies de la selva paranaense que hoy escasean en estado silvestre.',
+    audio:'Biodiversidad de la selva misionera'
+  },
+  {
+    id:'murales', type:'evento', group:'pronto', order:1,
+    name:'Murales en Bici + Luna Llena', addr:'Punto EcoBicis, Costanera',
+    img:IMG.murales, coords:[-27.369821377959507, -55.885708632367724],
+    when:{label:'Viernes 28 de agosto · 18 hs', sub:'Traé tu bici o alquilá EcoBici', ico:'ph-bicycle'},
+    moods:['noche','movida'], routes:['noche'],
+    tags:[['🚴 En bici','sunset'],['🌕 Luna llena','']],
+    price:'Gratis con inscripción', cupo:'25 cupos', wapp:true,
+    ticketType:'free_reg',
+    story:'Pedaleá la ciudad de noche recorriendo los murales que le dan color a Posadas, justo bajo la luna llena. Un circuito de arte urbano que conecta más de 60 intervenciones repartidas por los barrios.',
+    fact:'Posadas ya registra más de 60 murales urbanos. El arte callejero transformó paredones grises en una galería a cielo abierto.',
+    audio:null
+  },
+  {
+    id:'cementerio', type:'evento', group:'pronto', order:2,
+    name:'Cementerio Nocturno', addr:'Cementerio La Piedad',
+    img:IMG.cementerio, coords:[-27.379563916079253, -55.912587187676344],
+    when:{label:'Sábado 29 de agosto · 18 hs', sub:'Duración 75 min · +12 años', ico:'ph-moon-stars'},
+    moods:['historia','noche'], routes:['noche'],
+    tags:[['🌙 Nocturno','sunset'],['🎧 Audioguía','audio']],
+    price:'Gratis con inscripción', cupo:'20 cupos', wapp:true,
+    ticketType:'free_reg',
+    story:'Un paseo entre mausoleos a la luz de faroles, donde la historia de Posadas se cruza con sus mitos. Personajes ilustres, leyendas del río y arquitectura funeraria de otro siglo. No es de terror: es memoria y patrimonio.',
+    fact:'Los antiguos cementerios de las capitales provinciales son verdaderos museos a cielo abierto: sus mausoleos cuentan quién fundó y dio forma a la ciudad.',
+    audio:'Mitos y leyendas de La Piedad'
+  },
+  {
+    id:'bajada', type:'evento', group:'pronto', order:3,
+    name:'Paseo: Bajada Vieja', addr:'Monumento a Andrés Guacurarí',
+    img:IMG.bajada, coords:[-27.360522205734593, -55.88782735220992],
+    when:{label:'Domingo 30 de agosto · 16 hs', sub:'Duración 90 min', ico:'ph-calendar-check'},
+    moods:['historia','mates'], routes:['guiados'],
+    tags:[['🚶 Guiado','sunset'],['📸 Patrimonio','audio']],
+    price:'Gratis con inscripción', cupo:'20 cupos', wapp:true,
+    ticketType:'free_reg',
+    story:'El barrio del Mensú, la puerta de entrada original a la ciudad por el río. Adoquines, escalinatas y la historia de los trabajadores del yerbatal que marcaron la identidad de Misiones. El rincón que dio origen a Posadas.',
+    fact:'La Bajada Vieja es el único tramo del casco antiguo que sobrevivió a la ampliación de la Costanera: un pedazo de la Posadas de 1900 intacto.',
+    audio:'El camino del Mensú'
+  },
+  {
+    id:'parque', type:'evento', group:'pronto', order:4,
+    name:'Paseo: Parque Paraguayo', addr:'Frente al Museo Aníbal Cambas',
+    img:IMG.parque, coords:[-27.355543040894478, -55.89354964734455],
+    when:{label:'Domingo 30 de agosto · 10 hs', sub:'Duración 60 min · Familiar', ico:'ph-tree'},
+    moods:['historia','familia','mates'], routes:['guiados','verde'],
+    tags:[['🌳 Historia','free'],['👨‍👩‍👧 Familiar','']],
+    price:'Gratis con inscripción', cupo:'30 cupos', wapp:true,
+    ticketType:'free_reg',
+    story:'Un paseo por el parque que homenajea la hermandad con el Paraguay, a pasos del río. Monolitos, especies añosas y el Museo Aníbal Cambas al lado para completar la mañana con historia regional.',
+    fact:'El nombre del parque refleja el vínculo profundo entre Posadas y Encarnación: dos ciudades hermanas separadas apenas por el ancho del Paraná.',
+    audio:null
+  },
+  {
+    id:'catedral', type:'lugar', group:'hoy', order:4,
+    name:'Catedral San José', addr:'Plaza 9 de Julio, centro',
+    img:IMG.catedral, coords:[-27.36594616927107, -55.89401523317657],
+    when:{label:'Todos los días · Entrada libre', sub:'El corazón del centro', ico:'ph-church'},
+    moods:['historia','familia','cultura'], routes:['guiados'],
+    tags:[['⛪ Ícono','sunset'],['🆓 Gratis','free'],['📸 Foto obligada','']],
+    price:'Gratis', cupo:null, wapp:false,
+    story:'Frente a la Plaza 9 de Julio se levanta la Catedral de Posadas, el edificio que marca el kilómetro cero de la ciudad. Sus torres blancas dominan el skyline del centro y adentro guarda un silencio fresco perfecto para hacer una pausa entre paseo y paseo.',
+    fact:'La plaza y la catedral forman el núcleo fundacional: alrededor de esta manzana se organizó toda la Posadas del siglo XIX.',
+    audio:'La catedral y el corazón fundacional'
+  },
+  {
+    id:'brete', type:'lugar', group:'hoy', order:5,
+    name:'Playa El Brete', addr:'Zona norte, sobre el Paraná',
+    img:IMG.brete, coords:[-27.354086043734497, -55.902548192484936],
+    when:{label:'Verano · Playa urbana', sub:'Arena y río en la ciudad', ico:'ph-umbrella'},
+    moods:['rio','familia','mates'], routes:['rio'],
+    tags:[['🏖️ Playa de río','river'],['👨‍👩‍👧 Familiar','free']],
+    price:'Gratis', cupo:null, wapp:false,
+    story:'La playa urbana de Posadas: arena sobre el Paraná donde los posadeños se refrescan en verano. Sombrillas, mate, gurises jugando en la orilla y el río tibio como pileta natural. Un plan clásico para las tardes de calor misionero.',
+    fact:'El Brete es una de las pocas playas de río habilitadas dentro del ejido urbano de una capital argentina. Ciudad y naturaleza, todo junto.',
+    audio:null
+  },
+  {
+    id:'mirador', type:'lugar', group:'hoy', order:6,
+    name:'Vista al Puente San Roque', addr:'Costanera, tramo norte',
+    img:IMG.mirador, coords:[-27.3520,-55.8850],
+    when:{label:'Mejor al atardecer', sub:'Dos países en una postal', ico:'ph-binoculars'},
+    moods:['rio','historia'], routes:['rio'],
+    tags:[['🌉 Panorámica','river'],['🌅 Atardecer','sunset']],
+    price:'Gratis', cupo:null, wapp:false,
+    story:'Desde este tramo de la Costanera se abre la mejor panorámica del Puente Internacional San Roque González de Santa Cruz, que une Argentina con Paraguay sobre el Paraná. Al atardecer, las luces de Encarnación empiezan a titilar del otro lado del agua.',
+    fact:'El puente tiene 2,55 km de largo y conecta Posadas con Encarnación. Es uno de los pasos fronterizos más transitados del país.',
+    audio:'Un puente entre dos países'
+  },
+  {
+    id:'feria', type:'lugar', group:'finde', order:3,
+    name:'Feria Franca y La Placita', addr:'Centro de Posadas',
+    img:IMG.feria, coords:[-27.373221630573084, -55.907199144091635],
+    when:{label:'Sábados · Desde las 7 hs', sub:'Productos de la tierra colorada', ico:'ph-basket'},
+    moods:['mates','familia','cultura'], routes:['guiados'],
+    tags:[['🧺 Feria local','mate'],['🍯 Productos regionales','free']],
+    price:'Entrada libre', cupo:null, wapp:false,
+    story:'El sábado a la mañana la ciudad huele a feria: puestos de yerba, miel, mandioca, chipa recién hecha y verduras que llegan directo de las chacras misioneras. La Feria Franca es el punto de encuentro entre el productor y el posadeño, con precio justo y charla incluida.',
+    fact:'Las Ferias Francas nacieron en Misiones en los años 90 como movimiento de agricultura familiar. Hoy son un modelo replicado en todo el país.',
+    audio:null
+  },
+  {
+    id:'conocimiento', type:'evento', group:'pronto', order:5,
+    name:'Noche en el Parque del Conocimiento', addr:'Av. Ulises López, Villa Cabello',
+    img:IMG.conocimiento, coords:[-27.4030,-55.9260],
+    when:{label:'Según cartelera · Ver funciones', sub:'Teatro Lírico y muestras', ico:'ph-mask-happy'},
+    moods:['noche','cultura','familia'], routes:['noche'],
+    tags:[['🎭 Cultura','sunset'],['🌙 Nocturno','']],
+    price:'Según función', cupo:null, wapp:true,
+    ticketType:'paid', ticketPrice:null,
+    story:'Un complejo cultural imponente que ilumina la noche posadeña: el Teatro Lírico, el planetario, la biblioteca y salas de muestras. De día un paseo familiar, de noche un plan de espectáculos, conciertos y cine bajo las estrellas del planetario.',
+    fact:'El Parque del Conocimiento alberga uno de los teatros líricos más modernos del norte argentino, con acústica de nivel internacional.',
+    audio:'Un faro cultural en la selva urbana'
+  }
+];
 
-        let places = [
-            { id: 201, name: "Paseo: Parque Paraguayo", shortName: "P. Paraguayo", address: "Frente al Museo Aníbal Cambas", coords: [-27.3585, -55.8940], desc: "Paseo guiado conociendo la historia y tradición del lugar. Sábado 8 de Agosto | 16 hs.", moods: ["historia", "familia", "mates"], vibes: ["🚶‍♂️ Paseo Guiado", "🌳 Historia"], selloLocal: true, audioGuide: "Historia del Parque Paraguayo" },
-            { id: 202, name: "Paseo: Jardín Botánico", shortName: "J. Botánico", address: "SUM del Jardín Botánico", coords: [-27.4080, -55.8830], desc: "Recorrido guiado por la naturaleza de la ciudad. Domingo 9 y 23 de Agosto | 16 hs.", moods: ["familia", "mates", "historia"], vibes: ["🚶‍♂️ Paseo Guiado", "🍃 Naturaleza"], selloLocal: true, audioGuide: "Especies y Biodiversidad" },
-            { id: 203, name: "Paseo: Bajada Vieja", shortName: "Bajada Vieja", address: "Monumento Andrés Guacurarí", coords: [-27.3565, -55.8902], desc: "Recorrido por el histórico barrio del Mensú. Sábado 15 de Agosto | 16 hs.", moods: ["historia", "mates"], vibes: ["🚶‍♂️ Paseo Guiado", "📸 Patrimonio"], selloLocal: true, audioGuide: "El camino del Mensú" },
-            { id: 204, name: "Paseo: Casco Histórico", shortName: "Casco Histórico", address: "Plaza 9 de Julio", coords: [-27.3660, -55.8965], desc: "Caminata por el centro histórico de la ciudad. Domingo 16 de Agosto | 16 hs.", moods: ["historia", "familia"], vibes: ["🚶‍♂️ Paseo Guiado", "🏛️ Arquitectura"], selloLocal: true, audioGuide: "Arquitectura Posadeña" },
-            { id: 205, name: "Murales en Bici + Luna Llena", shortName: "Murales en Bici", address: "Puesto EcoBicis", coords: [-27.3638, -55.8870], desc: "Paseo nocturno en bicicleta recorriendo murales bajo la luna llena. Viernes 28 de Agosto | 18 hs.", moods: ["noche", "movida"], vibes: ["🚴‍♀️ Paseo en Bici", "🌕 Luna Llena"], selloLocal: true },
-            { id: 206, name: "Paseo: Cementerio Nocturno", shortName: "Cementerio", address: "Cementerio La Piedad", coords: [-27.3850, -55.9120], desc: "Paseo nocturno conociendo los mitos y la historia de La Piedad. Sábado 29 de Agosto | 18 hs.", moods: ["historia", "noche"], vibes: ["🚶‍♂️ Paseo Guiado", "🌙 Nocturno"], selloLocal: true, audioGuide: "Mitos y Leyendas" },
-            { id: 104, name: "Catamarán Mburucuyá", shortName: "Catamarán", address: "Muelle de la Costanera", coords: [-27.3591, -55.8893], desc: "Paseo por el río Paraná con excelentes vistas a Encarnación.", moods: ["mates", "familia"], vibes: ["🌅 Atardecer", "🧉 Mates"], selloLocal: false },
-            { id: 106, name: "Centro de Información", shortName: "Info Turística", address: "4to Tramo Costanera", coords: [-27.3639, -55.8875], desc: "Atención al visitante, con mapas, folletería e internet WiFi gratis.", moods: ["indoor", "historia"], vibes: ["🗺️ Mapas", "🌐 WiFi libre"], selloLocal: false },
-            { id: 107, name: "Holy Cervecería", shortName: "Holy Bar", address: "Coronel López 2138", coords: [-27.3625, -55.8880], desc: "Patio cervecero frente al río. Excelente opción para arrancar la noche.", moods: ["noche", "mates"], vibes: ["🍻 Cerveza", "🔊 Música"], selloLocal: false }
-        ];
+const MOODS = [
+  {id:'all', label:'Todo', emo:'✨'},
+  {id:'cerca', label:'Cerca', emo:'📍'},
+  {id:'mates', label:'Tarde de mates', emo:'🍵'},
+  {id:'historia', label:'Historia', emo:'🏛️'},
+  {id:'cultura', label:'Cultura', emo:'🎭'},
+  {id:'familia', label:'En familia', emo:'👨‍👩‍👧'},
+  {id:'noche', label:'De noche', emo:'🍻'},
+  {id:'movida', label:'En bici', emo:'🚴'},
+  {id:'rio', label:'Del río', emo:'🌅'}
+];
 
-        let activeMapElements = [];
-        let localSeleccionado = null; 
+const GROUPS = [
+  {id:'hoy', label:'Hoy podés', dot:'', count:'siempre'},
+  {id:'finde', label:'Este fin de semana', dot:'finde', count:''},
+  {id:'pronto', label:'Más adelante en agosto', dot:'pronto', count:''}
+];
 
-        let actualAudio = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3');
-        let audioInterval; let isPlaying = false;
+const ROUTES = {
+  guiados:{name:'Ruta de Paseos Guiados', desc:'Los recorridos a pie por el casco histórico, sus barrios fundacionales y la feria.', color:'#f5943d', cls:'', dist:'~4 km', time:'A pie', ids:['bajada','catedral','casco','parque','feria'],
+    path:[[-27.3605,-55.8878],[-27.3618,-55.8888],[-27.3635,-55.8905],[-27.3648,-55.8922],[-27.3659,-55.8940],[-27.3660,-55.8952],[-27.3660,-55.8965],[-27.3648,-55.8970],[-27.3630,-55.8965],[-27.3610,-55.8958],[-27.3590,-55.8948],[-27.3570,-55.8942],[-27.3555,-55.8935],[-27.3565,-55.8958],[-27.3590,-55.8985],[-27.3620,-55.9010],[-27.3650,-55.9035],[-27.3680,-55.9055],[-27.3710,-55.9065],[-27.3732,-55.9072]]},
+  rio:{name:'Ruta del Río', desc:'Todo lo que pasa a orillas del Paraná: playa, catamarán, mirador y birras al atardecer.', color:'#37b5a4', cls:'rio', dist:'~3 km', time:'Paseo', ids:['costanera','holy','catamaran','mirador','brete'],
+    path:[[-27.3610,-55.8891],[-27.3605,-55.8892],[-27.3600,-55.8893],[-27.3595,-55.8893],[-27.3591,-55.8893],[-27.3588,-55.8890],[-27.3585,-55.8886],[-27.3575,-55.8875],[-27.3560,-55.8865],[-27.3545,-55.8858],[-27.3530,-55.8852],[-27.3520,-55.8850],[-27.3525,-55.8870],[-27.3530,-55.8895],[-27.3535,-55.8920],[-27.3538,-55.8950],[-27.3540,-55.8980],[-27.3540,-55.9000],[-27.3541,-55.9025]]},
+  noche:{name:'Ruta Nocturna', desc:'Cuando cae el sol: murales en bici, cultura, misterios y patio cervecero.', color:'#b06cf7', cls:'noche', dist:'~5 km', time:'Noche', ids:['holy','murales','cementerio','conocimiento'],
+    path:[[-27.3588,-55.8904],[-27.3595,-55.8895],[-27.3610,-55.8885],[-27.3630,-55.8875],[-27.3655,-55.8865],[-27.3680,-55.8860],[-27.3698,-55.8857],[-27.3710,-55.8880],[-27.3730,-55.8920],[-27.3750,-55.8960],[-27.3770,-55.9000],[-27.3785,-55.9050],[-27.3796,-55.9126],[-27.3820,-55.9150],[-27.3880,-55.9180],[-27.3940,-55.9210],[-27.3990,-55.9240],[-27.4030,-55.9260]]},
+  verde:{name:'Ruta Verde', desc:'Naturaleza dentro de la ciudad: el pulmón botánico y los parques históricos.', color:'#57ab66', cls:'verde', dist:'~2 km', time:'Tranqui', ids:['parque','jardin'],
+    path:[[-27.3555,-55.8935],[-27.3570,-55.8938],[-27.3600,-55.8940],[-27.3640,-55.8942],[-27.3680,-55.8945],[-27.3730,-55.8950],[-27.3780,-55.8955],[-27.3830,-55.8958],[-27.3880,-55.8960],[-27.3930,-55.8962],[-27.3980,-55.8965],[-27.4030,-55.8967],[-27.4087,-55.8968]]}
+};
 
-        function abrirPanel(data) {
-            localSeleccionado = data;
-            if (navigator.vibrate) navigator.vibrate(20);
-            
-            map.flyTo([data.coords[0] - 0.003, data.coords[1]], 14.5, { duration: 0.5 });
-            document.getElementById('sheet-hero').style.backgroundImage = `url('https://picsum.photos/seed/${data.id}/600/300')`;
+const byId = id => PLACES.find(p=>p.id===id);
+let currentMood='all', current=null, saved=new Set();
 
-            let vibesHTML = '';
-            if(data.selloLocal) vibesHTML += `<span class="tag-sello"><i class="ph-fill ph-medal"></i> Agenda Oficial</span>`;
-            if(data.vibes) vibesHTML += data.vibes.map(v => `<span class="vibe-tag">${v}</span>`).join('');
+// ============ SPLASH / NAV ============
+function enterApp(){ document.getElementById('splash').classList.add('hidden'); switchView('explore'); }
+document.getElementById('splash-enter-btn').addEventListener('click', enterApp);
+function switchView(v){
+  document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));
+  document.getElementById('view-'+v).classList.add('active');
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active', t.dataset.v===v));
+  document.querySelector('.app-head').classList.toggle('over-map', v==='explore');
+  if(v==='explore'){ setTimeout(()=>{ map.invalidateSize(); setMapMode(mapMode); },200); }
+}
 
-            document.getElementById('sheet-title').innerText = data.name;
-            document.getElementById('sheet-address').textContent = data.address;
-            document.getElementById('sheet-desc').textContent = data.desc;
-            const dist = (Math.random() * 4 + 0.5).toFixed(1);
-            document.getElementById('sheet-distance').innerHTML = `🚗 ${Math.round(dist * 4)} min (${dist} km)`;
-            document.getElementById('sheet-vibe-tags').innerHTML = vibesHTML;
+// ============ FEED HERO ============
+function renderHero(){
+  document.getElementById('feed-hero').innerHTML =
+    `<img src="${IMG.costanera}" alt="Costanera de Posadas">
+     <div class="feed-hero-grad"></div>
+     <div class="feed-hero-body">
+        <span class="feed-hero-tag"><i class="ph-fill ph-star"></i> Destacado de la semana</span>
+        <div class="feed-hero-title">Luna llena en bici por los murales</div>
+        <div class="feed-hero-meta"><i class="ph-fill ph-calendar-dots"></i> Viernes 28 · 18 hs · Costanera</div>
+     </div>`;
+  document.getElementById('feed-hero').onclick=()=>openSheet('murales');
+}
 
-            resetAudio();
-            const audioPanel = document.getElementById('audio-guide-panel');
-            if(data.audioGuide) {
-                audioPanel.classList.add('active'); 
-                document.getElementById('audio-title').innerText = data.audioGuide;
-            } else { 
-                audioPanel.classList.remove('active'); 
-            }
+// ============ MOODS ============
+function renderMoods(){
+  document.getElementById('moods').innerHTML = MOODS.map(m=>
+    `<button class="mood ${m.id===currentMood?'active':''}" onclick="setMood('${m.id}')"><span class="emo">${m.emo}</span> ${m.label}</button>`
+  ).join('');
+}
+function setMood(id){
+  currentMood=id;
+  renderMoods();
+  if(id==='cerca' && !userPos){
+    // Request geolocation when "Cerca" is selected
+    requestGeo(false);
+  }
+  renderTimeline();
+}
 
-            document.getElementById('map').classList.add('map-focus');
-            document.getElementById('ui-top').classList.add('ui-hidden');
-            document.getElementById('ui-bottom').classList.add('ui-hidden');
-            
-            document.getElementById('sheet-overlay').classList.add('active');
-            document.getElementById('bottom-sheet').classList.add('open');
-        }
+// ============ TIMELINE ============
+function distBadge(p){
+  if(!userPos || !p.coords) return '';
+  const d=haversine(userPos.lat,userPos.lng,p.coords[0],p.coords[1]);
+  return `<div class="ev-dist"><i class="ph-fill ph-navigation-arrow"></i> ${formatDist(d)}</div>`;
+}
 
-        function toggleAudio() {
-            const btnIcon = document.querySelector('#audio-btn i');
-            const fill = document.getElementById('audio-fill');
-            
-            if(isPlaying) {
-                actualAudio.pause();
-                clearInterval(audioInterval);
-                btnIcon.className = 'ph-fill ph-play';
-                isPlaying = false;
-            } else {
-                actualAudio.play(); 
-                btnIcon.className = 'ph-fill ph-pause';
-                isPlaying = true;
-                
-                audioInterval = setInterval(() => {
-                    if (actualAudio.duration) {
-                        const progress = (actualAudio.currentTime / actualAudio.duration) * 100;
-                        fill.style.width = progress + '%';
-                        
-                        if (actualAudio.ended) {
-                            toggleAudio();
-                            fill.style.width = '0%';
-                        }
-                    }
-                }, 200);
-            }
-        }
+function renderTimeline(){
+  const wrap = document.getElementById('timeline');
+  let html='';
+  GROUPS.forEach(g=>{
+    let items = PLACES.filter(p=>p.group===g.id && (currentMood==='all'||p.moods.includes(currentMood)));
+    if(currentMood==='cerca' && userPos){
+      items = items.filter(p=>p.coords && haversine(userPos.lat,userPos.lng,p.coords[0],p.coords[1])<=2000);
+      items.sort((a,b)=> haversine(userPos.lat,userPos.lng,a.coords[0],a.coords[1]) - haversine(userPos.lat,userPos.lng,b.coords[0],b.coords[1]) );
+    } else {
+      items.sort((a,b)=>a.order-b.order);
+    }
+    if(!items.length) return;
+    html += `<div class="tl-group">
+      <div class="tl-head"><div class="tl-dot ${g.dot}"></div><div class="tl-label">${g.label}</div><div class="tl-count">${items.length} ${items.length===1?'plan':'planes'}</div></div>
+      <div class="tl-rail">${items.map((p,i)=>cardHTML(p,i)).join('')}</div></div>`;
+  });
+  if(!html){
+    if(currentMood==='cerca' && !userPos) html = `<div class="feed-foot" style="padding:40px 0">📍 Activalo tu ubicación para ver lo más cercano<br><strong>Tocá el botón de ubicación en el mapa</strong>.</div>`;
+    else html = `<div class="feed-foot" style="padding:40px 0">No hay planes con ese filtro 🤔<br>Probá con <strong>Todo</strong>.</div>`;
+  }
+  wrap.innerHTML = html;
+}
+function cardHTML(p, idx){
+  const foot = [];
+  if(p.audio) foot.push(`<span class="pill pill-audio"><i class="ph-fill ph-headphones"></i> Audioguía</span>`);
+  if(p.cupo) foot.push(`<span class="pill pill-cupo"><i class="ph-fill ph-users"></i> ${p.cupo}</span>`);
+  if(p.price==='Gratis'||String(p.price).includes('Gratis')||String(p.price).includes('libre')) foot.push(`<span class="pill pill-free">Gratis</span>`);
+  else foot.push(`<span class="pill pill-hour">${p.price}</span>`);
+  if(p.ticketType==='paid') foot.push(`<span class="pill pill-ticket"><i class="ph-fill ph-ticket"></i> Entradas</span>`);
+  else if(p.ticketType==='free_reg') foot.push(`<span class="pill pill-ticket"><i class="ph-fill ph-ticket"></i> Reservar</span>`);
+  const delay = Math.min((idx||0)*0.09, 0.5);
+  const ticketDot = p.ticketType ? '<div class="ev-ticket-dot"><i class="ph-fill ph-ticket"></i></div>' : '';
+  return `<div class="ev" style="animation-delay:${delay}s" onclick="openSheet('${p.id}')">
+    <img class="ev-thumb" src="${p.img}" alt="${p.name}">
+    ${ticketDot}
+    <div class="ev-shade"></div>
+    <div class="ev-body">
+      <div class="ev-when"><i class="ph-fill ${p.when.ico}"></i> ${p.when.label}</div>
+      <div class="ev-title">${p.name}</div>
+      ${distBadge(p)}
+      <div class="ev-loc"><i class="ph-fill ph-map-pin"></i> ${p.addr}</div>
+      <div class="ev-foot">${foot.join('')}</div>
+    </div></div>`;
+}
 
-        function resetAudio() {
-            actualAudio.pause();
-            actualAudio.currentTime = 0;
-            clearInterval(audioInterval); 
-            isPlaying = false;
-            const fill = document.getElementById('audio-fill');
-            const btnIcon = document.querySelector('#audio-btn i');
-            if(fill) fill.style.width = '0%';
-            if(btnIcon) btnIcon.className = 'ph-fill ph-play';
-        }
+// ============ DETAIL SHEET ============
+function openSheet(id){
+  current = byId(id);
+  if(navigator.vibrate) navigator.vibrate(15);
+  const p = current;
+  document.getElementById('sh-img').src = p.img;
+  document.getElementById('sh-title').textContent = p.name;
+  document.getElementById('sh-addr').textContent = p.addr;
+  document.getElementById('sh-tags').innerHTML = p.tags.map(t=>{
+    const cls = t[1]==='free'?'pill-free':t[1]==='audio'?'pill-audio':t[1]==='mate'?'pill-free':t[1]==='river'?'pill-audio':'pill-hour';
+    return `<span class="pill ${cls}">${t[0]}</span>`;
+  }).join('');
+  document.getElementById('sh-when').innerHTML =
+    `<div class="sh-when-ico"><i class="ph-fill ${p.when.ico}"></i></div>
+     <div class="sh-when-txt"><strong>${p.when.label}</strong><span>${p.when.sub}</span></div>`;
+  // distance badge
+  const distEl = document.getElementById('sh-dist');
+  if(userPos && p.coords){
+    const d=haversine(userPos.lat,userPos.lng,p.coords[0],p.coords[1]);
+    distEl.innerHTML=`<i class="ph-fill ph-navigation-arrow"></i> ${formatDist(d)} de tu ubicación`;
+    distEl.style.display='';
+  } else {
+    distEl.innerHTML=`<i class="ph-fill ph-navigation-arrow"></i> Tocá el ícono de ubicación en el mapa para ver la distancia`;
+    distEl.style.color='var(--muted)';
+    distEl.style.background='rgba(255,255,255,0.04)';
+    distEl.style.borderColor='var(--line)';
+    distEl.style.display='';
+  }
+  document.getElementById('sh-story').textContent = p.story;
+  document.getElementById('sh-fact').innerHTML = `<b>¿Sabías que…?</b> ${p.fact}`;
 
-        function cerrarPanel() {
-            resetAudio();
-            document.getElementById('map').classList.remove('map-focus');
-            document.getElementById('sheet-overlay').classList.remove('active');
-            document.getElementById('bottom-sheet').classList.remove('open');
-            document.getElementById('ui-top').classList.remove('ui-hidden');
-            document.getElementById('ui-bottom').classList.remove('ui-hidden');
-            localSeleccionado = null;
-        }
+  resetAudio();
+  const au = document.getElementById('audio');
+  if(p.audio){ au.classList.add('on'); document.getElementById('audio-title').textContent = p.audio; }
+  else au.classList.remove('on');
 
-        function sumarVisita() {
-            if(!localSeleccionado) return;
-            if (navigator.vibrate) navigator.vibrate([30, 50, 30]);
-            const btn = document.getElementById('btn-alentar');
-            btn.classList.add('confirmado'); btn.innerHTML = `<i class="ph-fill ph-check-circle"></i> Guardado`;
-        }
+  const btn = document.getElementById('btn-main');
+  if(p.ticketType){
+    if(p.ticketType==='paid'){ btn.className='btn-main'; btn.innerHTML='<i class="ph-fill ph-ticket"></i> Comprar entrada'; }
+    else { btn.className='btn-main wapp'; btn.innerHTML='<i class="ph-fill ph-ticket"></i> Reservar cupo'; }
+  } else if(p.wapp){ btn.className='btn-main wapp'; btn.innerHTML='<i class="ph-fill ph-whatsapp-logo"></i> '+(p.type==='evento'?'Reservar mi lugar':'Consultar'); }
+  else if(saved.has(p.id)){ btn.className='btn-main saved'; btn.innerHTML='<i class="ph-fill ph-check-circle"></i> Guardado'; }
+  else { btn.className='btn-main'; btn.innerHTML='<i class="ph-fill ph-bookmark-simple"></i> Guardar'; }
 
-        function compartirLocal() {
-            if (!localSeleccionado) return;
-            const text = `Mirá este evento en Posadas: ${localSeleccionado.name}.`;
-            if (navigator.share) { navigator.share({ title: 'Radar Posadas', text: text, url: window.location.href }); } 
-            else { alert(`Copiá este enlace:\n${text} - ${window.location.href}`); }
-        }
+  document.getElementById('overlay').classList.add('on');
+  document.getElementById('sheet').classList.add('on');
+}
+function closeSheet(){
+  resetAudio();
+  document.getElementById('overlay').classList.remove('on');
+  document.getElementById('sheet').classList.remove('on');
+}
+function mainAction(){
+  if(!current) return;
+  if(navigator.vibrate) navigator.vibrate([20,40,20]);
+  if(current.ticketType){ openTicketModal(current); }
+  else if(current.wapp){
+    const msg = encodeURIComponent(`¡Hola! Quiero reservar para "${current.name}" (${current.when.label}).`);
+    window.open('https://wa.me/5493764578395?text='+msg, '_blank');
+  } else {
+    saved.add(current.id);
+    const btn=document.getElementById('btn-main');
+    btn.className='btn-main saved'; btn.innerHTML='<i class="ph-fill ph-check-circle"></i> Guardado';
+  }
+}
+function shareItem(){
+  if(!current) return;
+  const text = `Mirá este plan en Posadas: ${current.name} · ${current.when.label}`;
+  if(navigator.share) navigator.share({title:'PosadasVive', text, url:location.href});
+  else alert(text);
+}
 
-        function renderMap(moodFilter) {
-            activeMapElements.forEach(el => map.removeLayer(el)); activeMapElements = [];
-            
-            let pointIndex = 0;
-            places.forEach(p => {
-                if (moodFilter === 'all' || p.moods.includes(moodFilter)) {
-                    let pillClass = p.selloLocal ? 'pill-hot' : '';
-                    let iconDOM = `
-                        <div class="marker-pill ${pillClass} marker-appear" style="animation-delay: ${pointIndex * 0.06}s">
-                            <img src="https://picsum.photos/seed/${p.id}/100/100" class="pill-thumb">
-                            <span>${p.shortName}</span>
-                        </div>
-                    `;
-                    const icon = L.divIcon({ className: 'custom-pill-icon', html: iconDOM, iconSize: null });
-                    const marker = L.marker(p.coords, {icon: icon}).addTo(map).on('click', () => abrirPanel(p));
-                    activeMapElements.push(marker); pointIndex++;
-                }
-            });
-        }
-        renderMap('all');
+// ============ DIRECTIONS (CÓMO LLEGAR — IN-APP) ============
+let dirMode = 'driving', dirRouteLayer = null;
 
-        document.querySelectorAll('button.btn-filter').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                document.querySelectorAll('button.btn-filter').forEach(b => b.classList.remove('active'));
-                const target = e.target.closest('button'); target.classList.add('active'); renderMap(target.dataset.cat);
-            });
-        });
+const OSRM_PROFILES = { driving:'driving', motorcycle:'driving', bicycling:'cycling', walking:'foot' };
+const STEP_ICO = {
+  turn:'ph-arrow-bend-left', 'turn-sharp':'ph-arrow-elbow-left', 'turn-slight':'ph-arrow-fat-left',
+  straight:'ph-arrow-up', roundabout:'ph-roundabout', 'roundabout-clockwise':'ph-roundabout',
+  depart:'ph-flag', arrive:'ph-map-pin', 'new name':'ph-arrow-up', merge:'ph-merge',
+  'on ramp':'ph-arrow-u-up-left', 'off ramp':'ph-arrow-u-down-right', fork:'ph-git-branch',
+  'end of road':'ph-arrow-elbow-down-right', continue:'ph-arrow-up', 'rotary':'ph-roundabout',
+  'exit roundabout':'ph-arrow-elbow-down-right'
+};
+const STEP_ICO_R = {
+  'turn-sharp-right':'ph-arrow-elbow-right', 'turn-slight-right':'ph-arrow-fat-right',
+  'turn-right':'ph-arrow-bend-right', 'turn-sharp-left':'ph-arrow-elbow-left',
+  'turn-slight-left':'ph-arrow-fat-left', 'turn-left':'ph-arrow-bend-left'
+};
 
-        let aiTypingInterval;
-        function abrirModalIA() {
-            document.getElementById('ai-modal').classList.add('active');
-            document.getElementById('ai-options').style.display = 'flex';
-            document.getElementById('ai-text-container').innerHTML = 'Seleccioná cuándo querés salir y te armo el plan ideal...';
-            clearInterval(aiTypingInterval);
-        }
+function setDirMode(mode){
+  dirMode = mode;
+  document.querySelectorAll('.dir-mode').forEach(b=>b.classList.toggle('active', b.dataset.mode===mode));
+}
 
-        function generarRuta(filtro) {
-            document.getElementById('ai-options').style.display = 'none';
-            const container = document.getElementById('ai-text-container');
-            container.innerHTML = '<span style="display: inline-block; width: 6px; height: 14px; background: var(--tourist); margin-left: 2px;"></span>';
-            
-            let textoObj = "";
-            
-            if (filtro === 'hoy') {
-                textoObj = "Analizando clima (☀️28°C) y agenda para HOY Domingo 16...\n\n📍 16:00 hs - Paseo guiado por el Centro y Casco Histórico. Arranca en la Plaza 9 de Julio.\n📍 18:30 hs - Podés ir a cerrar la tarde con unos mates al balneario Costa Sur.\n\n¡Inscribite al paseo por WhatsApp al 4578395!";
-            } else if (filtro === 'finde') {
-                textoObj = "Revisando la agenda para el PRÓXIMO FINDE...\n\n📍 Domingo 23 | 16:00 hs - Recorrido guiado por el Jardín Botánico, ideal para respirar naturaleza.\n📍 Sábado 29 | 18:00 hs - Paseo guiado en el Cementerio Nocturno (Mitos e historia).\n\nCupos limitados, ¡reservá tu lugar!";
-            } else {
-                textoObj = "Estos son los DESTACADOS que le quedan al mes...\n\n📍 Domingo 23 | 16:00 hs - Jardín Botánico.\n📍 Viernes 28 | 18:00 hs - Murales en Bici bajo la luna llena (Costanera).\n📍 Sábado 29 | 18:00 hs - Cementerio Nocturno.\n\nRecordá inscribirte al 4578395.";
-            }
-            
-            let i = 0;
-            clearInterval(aiTypingInterval);
-            aiTypingInterval = setInterval(() => {
-                if(i < textoObj.length) {
-                    let char = textoObj.charAt(i);
-                    if(char === '\n') char = '<br>';
-                    container.innerHTML = container.innerHTML.replace('<span', char + '<span');
-                    i++;
-                } else {
-                    clearInterval(aiTypingInterval);
-                }
-            }, 30);
-        }
+function openDirections(){
+  if(!current || !current.coords) return;
+  if(!userPos){ alert('Activá tu ubicación primero (botón de crosshair en el mapa).'); return; }
+  closeSheet();
+  fetchRoute(userPos.lat, userPos.lng, current.coords[0], current.coords[1], current.name);
+}
 
-        function cerrarModalIA() {
-            document.getElementById('ai-modal').classList.remove('active');
-            clearInterval(aiTypingInterval);
-        }
-    </script>
+function quickDir(id){
+  const p = byId(id);
+  if(!p || !p.coords) return;
+  if(!userPos){ alert('Activá tu ubicación primero (botón de crosshair en el mapa).'); return; }
+  fetchRoute(userPos.lat, userPos.lng, p.coords[0], p.coords[1], p.name);
+}
+
+async function fetchRoute(oLat, oLng, dLat, dLng, destName){
+  const profile = OSRM_PROFILES[dirMode] || 'driving';
+  const panel = document.getElementById('dir-panel');
+  panel.classList.add('on');
+  document.getElementById('dir-title').textContent = destName;
+  document.getElementById('dir-dist').textContent = '…';
+  document.getElementById('dir-dur').textContent = '…';
+  document.getElementById('dir-steps').innerHTML = '<div style="padding:20px;text-align:center;color:var(--muted);font-size:0.85rem"><i class="ph-fill ph-spinner" style="animation:locate-spin 1s linear infinite;font-size:1.5rem;display:block;margin-bottom:8px"></i>Calculando ruta…</div>';
+
+  // switch to explore/map if not there
+  switchView('explore');
+
+  try {
+    const url = `https://router.project-osrm.org/route/v1/${profile}/${oLng},${oLat};${dLng},${dLat}?overview=full&geometries=geojson&steps=true`;
+    const res = await fetch(url);
+    const data = await res.json();
+    if(!data.routes || !data.routes.length){ throw new Error('Sin resultado'); }
+    const route = data.routes[0];
+    drawRoute(route);
+    showDirSteps(route);
+  } catch(e){
+    document.getElementById('dir-steps').innerHTML = '<div style="padding:20px;text-align:center;color:var(--muted);font-size:0.85rem">No se pudo calcular la ruta 😕<br>Probá con otro modo de transporte.</div>';
+  }
+}
+
+function drawRoute(route){
+  if(dirRouteLayer){ map.removeLayer(dirRouteLayer); dirRouteLayer=null; }
+  const coords = route.geometry.coordinates.map(c=>[c[1],c[0]]);
+  dirRouteLayer = L.polyline(coords, {color:'var(--river)', weight:5, opacity:0.85, lineCap:'round', lineJoin:'round', dashArray:null}).addTo(map);
+  // glow effect
+  const glow = L.polyline(coords, {color:'var(--river)', weight:12, opacity:0.18, lineCap:'round', lineJoin:'round'}).addTo(map);
+  dirRouteLayer._glow = glow;
+  routeLayers.push(glow);
+  routeLayers.push(dirRouteLayer);
+  map.flyToBounds(dirRouteLayer.getBounds().pad(0.3), {duration:0.8});
+}
+
+function showDirSteps(route){
+  const totalDist = route.distance;
+  const totalDur = route.duration;
+  document.getElementById('dir-dist').textContent = formatDist(totalDist);
+  document.getElementById('dir-dur').textContent = totalDur < 3600 ? Math.ceil(totalDur/60)+' min' : (totalDur/3600).toFixed(1)+' h';
+
+  let stepsHtml = '';
+  route.legs.forEach(leg=>{
+    leg.steps.forEach(step=>{
+      const mod = step.maneuver;
+      let ico = STEP_ICO[mod.type] || 'ph-arrow-up';
+      if(mod.modifier && STEP_ICO_R[mod.type+'-'+mod.modifier]) ico = STEP_ICO_R[mod.type+'-'+mod.modifier];
+      else if(mod.modifier && mod.modifier.includes('right')) ico = 'ph-arrow-bend-right';
+      else if(mod.modifier && mod.modifier.includes('left')) ico = 'ph-arrow-bend-left';
+      if(mod.type==='depart') ico='ph-flag';
+      if(mod.type==='arrive') ico='ph-map-pin';
+      const inst = step.name && step.name!=='.' ? step.name : (mod.type==='arrive' ? 'Llegás al destino' : 'Seguí derecho');
+      const dist = step.distance > 0 ? `<div class="dir-step-dist">${formatDist(step.distance)}</div>` : '';
+      stepsHtml += `<div class="dir-step"><div class="dir-step-ico"><i class="ph-fill ${ico}"></i></div><div class="dir-step-txt"><div class="dir-step-inst">${inst}</div>${dist}</div></div>`;
+    });
+  });
+  document.getElementById('dir-steps').innerHTML = stepsHtml;
+}
+
+function closeDirPanel(){
+  document.getElementById('dir-panel').classList.remove('on');
+  if(dirRouteLayer){
+    if(dirRouteLayer._glow) map.removeLayer(dirRouteLayer._glow);
+    map.removeLayer(dirRouteLayer);
+    routeLayers = routeLayers.filter(l=>l!==dirRouteLayer && l!==dirRouteLayer._glow);
+    dirRouteLayer=null;
+  }
+}
+
+// ============ AUDIO ============
+let audioEl = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3');
+let audioTimer=null, playing=false;
+function toggleAudio(){
+  const ico=document.querySelector('#audio-btn i'), fill=document.getElementById('audio-fill');
+  if(playing){ audioEl.pause(); clearInterval(audioTimer); ico.className='ph-fill ph-play'; playing=false; }
+  else{
+    audioEl.play(); ico.className='ph-fill ph-pause'; playing=true;
+    audioTimer=setInterval(()=>{ if(audioEl.duration){ fill.style.width=(audioEl.currentTime/audioEl.duration*100)+'%'; if(audioEl.ended){ toggleAudio(); fill.style.width='0%'; } } },200);
+  }
+}
+function resetAudio(){ audioEl.pause(); audioEl.currentTime=0; clearInterval(audioTimer); playing=false; const f=document.getElementById('audio-fill'); if(f)f.style.width='0%'; const i=document.querySelector('#audio-btn i'); if(i)i.className='ph-fill ph-play'; }
+
+// ============ MAP + THEMED ROUTES ============
+const map = L.map('map',{zoomControl:false, tap:false, attributionControl:false}).setView([-27.372,-55.892],13);
+const dark = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',{maxZoom:19});
+const labels = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png',{maxZoom:19});
+const sat = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:19});
+dark.addTo(map); labels.addTo(map);
+let isSat=false;
+function toggleLayer(){ isSat=!isSat; const i=document.getElementById('layer-ico'); if(isSat){ map.removeLayer(dark); sat.addTo(map); i.className='ph-fill ph-map-trifold'; } else { map.removeLayer(sat); dark.addTo(map); i.className='ph-fill ph-globe-hemisphere-west'; } labels.bringToFront(); }
+
+
+// ============ GEOLOCATION (MI UBICACIÓN) ============
+let userMarker = null, userWatchId = null, userPos = null;
+
+// Haversine distance in meters
+function haversine(lat1,lon1,lat2,lon2){
+  const R=6371000, toRad=x=>x*Math.PI/180;
+  const dLat=toRad(lat2-lat1), dLon=toRad(lon2-lon1);
+  const a=Math.sin(dLat/2)**2+Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLon/2)**2;
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+function formatDist(m){
+  if(m<1000) return Math.round(m)+' m';
+  return (m/1000).toFixed(1).replace(',','.')+' km';
+}
+
+function locateUser(){
+  const btn = document.getElementById('locate-btn');
+  if(userMarker){
+    map.removeLayer(userMarker); userMarker=null;
+    if(userWatchId){ navigator.geolocation.clearWatch(userWatchId); userWatchId=null; }
+    btn.classList.remove('active');
+    renderTimeline();
+    renderCarousel(PLACES.slice().sort((a,b)=>0), mapMode);
+    return;
+  }
+  if(userPos){
+    // Position already cached, just show the marker
+    showUserPosition({coords:{latitude:userPos.lat, longitude:userPos.lng}});
+    return;
+  }
+  requestGeo(true);
+}
+
+// silent geolocation request for distance display (no marker, no fly)
+function requestGeo(showMarker){
+  if(userPos || !navigator.geolocation) return;
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      userPos = {lat:pos.coords.latitude, lng:pos.coords.longitude};
+      if(showMarker) showUserPosition(pos);
+      renderTimeline();
+      renderCarousel(PLACES.slice().sort((a,b)=>0), mapMode);
+    },
+    ()=>{}, {enableHighAccuracy:true, timeout:10000, maximumAge:60000}
+  );
+}
+
+function showUserPosition(pos){
+  const {latitude:lat, longitude:lng} = pos.coords;
+  userPos = {lat, lng};
+  const icon = L.divIcon({className:'', html:'<div class="user-marker"><div class="user-pulse"></div><div class="user-dot"></div></div>', iconSize:[20,20], iconAnchor:[10,10]});
+  userMarker = L.marker([lat,lng],{icon, zIndexOffset:1000}).addTo(map);
+  map.flyTo([lat,lng], 15, {duration:0.9});
+  const btn = document.getElementById('locate-btn');
+  if(btn){ btn.classList.remove('locating'); btn.classList.add('active'); }
+  // update position if user moves
+  userWatchId = navigator.geolocation.watchPosition(
+    newPos => { userPos={lat:newPos.coords.latitude,lng:newPos.coords.longitude}; userMarker.setLatLng([newPos.coords.latitude, newPos.coords.longitude]); },
+    ()=>{}, {enableHighAccuracy:true, maximumAge:10000}
+  );
+}
+
+// pin icon helper per category
+const PIN_ICO = { rio:'ph-waves', historia:'ph-bank', cultura:'ph-mask-happy', noche:'ph-moon-stars', mates:'ph-coffee', familia:'ph-baby', movida:'ph-bicycle' };
+function placeCat(p){
+  if(p.routes.includes('rio')&&p.moods.includes('rio')) return 'rio';
+  if(p.moods.includes('noche')) return 'noche';
+  if(p.moods.includes('rio')) return 'rio';
+  if(p.moods.includes('cultura')) return 'cultura';
+  return '';
+}
+function catPinClass(p){ const m=p.moods; if(m.includes('rio')) return 'rio'; if(m.includes('noche')) return 'noche'; if(m.includes('cultura')||m.includes('historia')) return ''; return 'verde'; }
+
+let mapMode='lugares', placeMarkers={}, routeLayers=[], activeRoute='guiados';
+
+// ============ MODE TOGGLE ============
+function setMapMode(mode){
+  mapMode=mode;
+  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.toggle('active', b.dataset.mode===mode));
+  const tabs=document.getElementById('route-tabs'), info=document.getElementById('route-info');
+  clearMarkers();
+  if(mode==='lugares'){
+    tabs.classList.remove('on'); info.classList.remove('on');
+    renderPlaceMarkers();
+    renderCarousel(PLACES.slice().sort((a,b)=>0), 'lugares');
+    map.flyTo([-27.372,-55.888],13,{duration:0.8});
+    if(PLACES[0]) setTimeout(()=>focusPlace(PLACES[0].id,false),100);
+  } else {
+    tabs.classList.add('on');
+    selectRoute(activeRoute);
+  }
+}
+function clearMarkers(){ routeLayers.forEach(l=>map.removeLayer(l)); routeLayers=[]; Object.values(placeMarkers).forEach(m=>map.removeLayer(m)); placeMarkers={}; }
+
+// ============ LUGARES MODE ============
+function renderPlaceMarkers(){
+  PLACES.forEach(p=>{
+    const cls=catPinClass(p);
+    const ico=PIN_ICO[p.moods.find(m=>PIN_ICO[m])]||'ph-map-pin';
+    const html=`<div class="place-pin ${cls}" data-pin="${p.id}"><div class="pin-dot"></div><i class="ph-fill ${ico} pin-ico"></i></div>`;
+    const m=L.marker(p.coords,{icon:L.divIcon({className:'pinwrap',html,iconSize:[40,40],iconAnchor:[20,20]})}).addTo(map).on('click',()=>focusPlace(p.id,true));
+    placeMarkers[p.id]=m;
+  });
+}
+function renderCarousel(list, mode){
+  const wrap=document.getElementById('map-carousel');
+  wrap.innerHTML=list.map((p,i)=>{
+    const num = mode==='rutas' ? `<div class="mcard-num">${i+1}</div>` : '';
+    const badge = p.type==='evento' ? 'Agenda' : 'Lugar';
+    let distHtml = '';
+    if(userPos && p.coords){
+      const d=haversine(userPos.lat,userPos.lng,p.coords[0],p.coords[1]);
+      distHtml=`<div class="mcard-dist"><i class="ph-fill ph-navigation-arrow"></i> ${formatDist(d)}</div>`;
+    }
+    return `<div class="mcard" data-card="${p.id}" style="animation-delay:${Math.min(i*0.06,0.4)}s" onclick="focusPlace('${p.id}',true)">
+      <div class="mcard-img">${num}<span class="mcard-badge">${badge}</span><img src="${p.img}" alt="${p.name}"><div class="mcard-grad"></div></div>
+      <div class="mcard-body">
+        <div class="mcard-t">${p.name.replace(/^.*: /,'')}</div>
+        <div class="mcard-loc"><i class="ph-fill ph-map-pin"></i> ${p.addr}</div>
+        ${distHtml}
+        <button class="mcard-dir" onclick="event.stopPropagation();quickDir('${p.id}')"><i class="ph-fill ph-navigation-arrow"></i> Cómo llegar</button>
+        <button class="mcard-cta" onclick="event.stopPropagation();openSheet('${p.id}')"><i class="ph-fill ph-book-open-text"></i> Ver la historia</button>
+      </div></div>`;
+  }).join('');
+}
+function focusPlace(id, doFly){
+  const p=byId(id); if(!p) return;
+  if(navigator.vibrate) navigator.vibrate(12);
+  // highlight pin
+  document.querySelectorAll('.place-pin').forEach(el=>el.classList.toggle('active', el.dataset.pin===id));
+  // highlight + scroll carousel card
+  document.querySelectorAll('.mcard').forEach(el=>el.classList.toggle('active', el.dataset.card===id));
+  const card=document.querySelector(`.mcard[data-card="${id}"]`);
+  if(card) card.scrollIntoView({behavior:'smooth', inline:'center', block:'nearest'});
+  if(doFly!==false) map.flyTo([p.coords[0]-0.006, p.coords[1]], 15, {duration:0.9});
+}
+
+// ============ RUTAS MODE ============
+function selectRoute(key){
+  activeRoute=key; mapMode='rutas';
+  document.querySelectorAll('.route-tab').forEach(t=>t.classList.toggle('active', t.dataset.c===key));
+  clearMarkers();
+  const r=ROUTES[key];
+  const pts=r.path||r.ids.map(id=>byId(id).coords);
+  const line=L.polyline(pts,{color:r.color,weight:4,opacity:0.9,dashArray:'2,11',lineCap:'round'}).addTo(map);
+  routeLayers.push(line);
+  r.ids.forEach((id,i)=>{
+    const p=byId(id);
+    const html=`<div class="stop-marker"><div class="stop-num ${r.cls}">${i+1}</div><div class="stop-tip">${p.name.replace(/^.*: /,'')}</div></div>`;
+    const m=L.marker(p.coords,{icon:L.divIcon({className:'stopwrap',html,iconSize:null})}).addTo(map).on('click',()=>{ map.flyTo([p.coords[0]-0.004,p.coords[1]],15,{duration:0.8}); document.querySelectorAll('.mcard').forEach(el=>el.classList.toggle('active', el.dataset.card===id)); const c=document.querySelector(`.mcard[data-card="${id}"]`); if(c) c.scrollIntoView({behavior:'smooth',inline:'center'}); });
+    routeLayers.push(m);
+  });
+  map.flyToBounds(line.getBounds().pad(0.45),{duration:0.9});
+  const info=document.getElementById('route-info');
+  info.classList.add('on');
+  info.innerHTML =
+    `<h3>${r.name}</h3><p>${r.desc}</p>
+     <div class="rt-meta"><span><i class="ph-fill ph-map-pin-line" style="color:${r.color}"></i> ${r.ids.length} paradas</span>
+     <span><i class="ph-fill ph-ruler" style="color:${r.color}"></i> ${r.dist}</span>
+     <span><i class="ph-fill ph-clock" style="color:${r.color}"></i> ${r.time}</span></div>`;
+  renderCarousel(r.ids.map(byId), 'rutas');
+}
+
+// ============ SOS ============
+function openSOS(){ document.getElementById('sos-modal').classList.add('on'); }
+function closeSOS(){ document.getElementById('sos-modal').classList.remove('on'); }
+
+// ============ TICKET MODAL ============
+let ticketQtyNum = 1, ticketPlace = null;
+const MAX_TICKETS = 6;
+
+function openTicketModal(p){
+  ticketPlace = p;
+  ticketQtyNum = 1;
+  // Reset form
+  document.getElementById('ticket-name-input').value = '';
+  document.getElementById('ticket-email-input').value = '';
+  document.getElementById('ticket-phone-input').value = '';
+  document.getElementById('ticket-qty-num').textContent = '1';
+
+  // Fill data
+  document.getElementById('ticket-img').src = p.img;
+  document.getElementById('ticket-name').textContent = p.name;
+  document.getElementById('ticket-when').innerHTML = `<i class="ph-fill ${p.when.ico}"></i> ${p.when.label}`;
+  document.getElementById('ticket-badge').innerHTML = p.ticketType==='paid'
+    ? '<i class="ph-fill ph-ticket"></i> Comprar entrada'
+    : '<i class="ph-fill ph-ticket"></i> Reservar cupo';
+
+  const isPaid = p.ticketType === 'paid';
+  const priceRow = document.getElementById('ticket-price-row');
+  const totalRow = document.getElementById('ticket-total-row');
+  const submit = document.getElementById('ticket-submit');
+  const submitText = document.getElementById('ticket-submit-text');
+  const mpNote = document.getElementById('ticket-mp-note');
+  const qtyRow = document.getElementById('ticket-qty-row');
+
+  if(isPaid && p.ticketPrice){
+    priceRow.style.display = 'flex';
+    document.getElementById('ticket-price-val').textContent = '$' + p.ticketPrice.toLocaleString('es-AR');
+    totalRow.style.display = 'flex';
+    document.getElementById('ticket-total-val').textContent = '$' + p.ticketPrice.toLocaleString('es-AR');
+    submit.className = 'ticket-submit pay';
+    submit.innerHTML = '<i class="ph-fill ph-whatsapp-logo"></i> <span id="ticket-submit-text">Consultar precio por WhatsApp</span>';
+    mpNote.innerHTML = '<i class="ph-fill ph-whatsapp-logo"></i> Te derivamos a WhatsApp para confirmar precio y disponibilidad';
+    mpNote.style.display = 'flex';
+    qtyRow.style.display = 'flex';
+  } else if(isPaid && !p.ticketPrice){
+    priceRow.style.display = 'none';
+    totalRow.style.display = 'none';
+    submit.className = 'ticket-submit pay';
+    submit.innerHTML = '<i class="ph-fill ph-whatsapp-logo"></i> <span id="ticket-submit-text">Consultar precio por WhatsApp</span>';
+    mpNote.innerHTML = '<i class="ph-fill ph-whatsapp-logo"></i> Te derivamos a WhatsApp para consultar precio y disponibilidad';
+    mpNote.style.display = 'flex';
+    qtyRow.style.display = 'flex';
+  } else {
+    priceRow.style.display = 'none';
+    totalRow.style.display = 'none';
+    submit.className = 'ticket-submit free';
+    submit.innerHTML = '<i class="ph-fill ph-check-circle"></i> <span id="ticket-submit-text">Confirmar inscripción</span>';
+    mpNote.style.display = 'none';
+    qtyRow.style.display = 'flex';
+  }
+
+  document.getElementById('ticket-overlay').classList.add('on');
+}
+function closeTicketModal(){
+  document.getElementById('ticket-overlay').classList.remove('on');
+  ticketPlace = null;
+}
+
+function ticketQty(delta){
+  ticketQtyNum = Math.max(1, Math.min(MAX_TICKETS, ticketQtyNum + delta));
+  document.getElementById('ticket-qty-num').textContent = ticketQtyNum;
+  if(ticketPlace && ticketPlace.ticketPrice){
+    document.getElementById('ticket-total-val').textContent = '$' + (ticketPlace.ticketPrice * ticketQtyNum).toLocaleString('es-AR');
+  }
+}
+
+function submitTicket(){
+  if(!ticketPlace) return;
+  const name = document.getElementById('ticket-name-input').value.trim();
+  const email = document.getElementById('ticket-email-input').value.trim();
+  const phone = document.getElementById('ticket-phone-input').value.trim();
+
+  if(!name){ document.getElementById('ticket-name-input').style.borderColor='var(--red)'; document.getElementById('ticket-name-input').focus(); return; }
+  if(!email || !email.includes('@')){ document.getElementById('ticket-email-input').style.borderColor='var(--red)'; document.getElementById('ticket-email-input').focus(); return; }
+  document.getElementById('ticket-name-input').style.borderColor='var(--line)';
+  document.getElementById('ticket-email-input').style.borderColor='var(--line)';
+
+  const p = ticketPlace;
+  const isPaid = p.ticketType === 'paid';
+  const qty = ticketQtyNum;
+
+  // Build well-crafted WhatsApp message
+  let msg = '';
+  if(isPaid){
+    const priceLine = p.ticketPrice ? `💰 *Precio por entrada:* $${p.ticketPrice.toLocaleString('es-AR')}\n🎟️ *Entradas:* ${qty}\n💵 *Total:* $${(p.ticketPrice*qty).toLocaleString('es-AR')}` : `🎟️ *Entradas solicitadas:* ${qty}`;
+    msg = `Hola! Me interesa comprar entradas para un evento de *PosadasVive* 🎟️\n\n`
+      + `📍 *${p.name}*\n`
+      + `📅 ${p.when.label}\n`
+      + `📌 ${p.addr}\n\n`
+      + `👤 *Nombre:* ${name}\n`
+      + `📧 *Email:* ${email}\n`
+      + (phone ? `📱 *Teléfono:* ${phone}\n` : '')
+      + `\n${priceLine}\n\n`
+      + `¿Cuál es el precio y la disponibilidad? ¡Gracias! 😊`;
+  } else {
+    msg = `Hola! Me quiero anotar en una actividad de *PosadasVive* 🌿\n\n`
+      + `📍 *${p.name}*\n`
+      + `📅 ${p.when.label}\n`
+      + `📌 ${p.addr}\n\n`
+      + `👤 *Nombre:* ${name}\n`
+      + `📧 *Email:* ${email}\n`
+      + (phone ? `📱 *Teléfono:* ${phone}\n` : '')
+      + `\n🎟️ *Personas:* ${qty}\n`
+      + (p.cupo ? ` cupos disponibles: ${p.cupo}\n` : '')
+      + `\n¿Hay lugar? ¡Gracias! 😊`;
+  }
+
+  const total = isPaid && p.ticketPrice ? '$'+(p.ticketPrice*qty).toLocaleString('es-AR') : (isPaid ? 'A consultar' : 'Gratis');
+  window.open('https://wa.me/5493764578395?text='+encodeURIComponent(msg), '_blank');
+  showTicketSuccess(p, name, email, qty, total);
+}
+
+function showTicketSuccess(p, name, email, qty, total){
+  const body = document.getElementById('ticket-body');
+  const isPaid = p.ticketType === 'paid';
+  body.innerHTML = `
+    <div class="ticket-success">
+      <div class="ticket-success-icon"><i class="ph-fill ph-check"></i></div>
+      <h3>${isPaid ? '¡Consulta enviada!' : '¡Inscripción enviada!'}</h3>
+      <p>${isPaid ? 'Te abrimos WhatsApp con todos tus datos. Consultá precio y disponibilidad directamente con el organizador.' : 'Te abrimos WhatsApp para confirmar tu lugar. ¡No cierres la conversación!'}</p>
+      <div class="ticket-success-detail">
+        <strong>${p.name}</strong><br>
+        📅 ${p.when.label}<br>
+        👤 ${name} · ${email}<br>
+        🎟️ ${qty} ${qty===1?'entrada':'entradas'} · ${total}
+      </div>
+      <button class="btn-close" onclick="closeTicketModal()">Cerrar</button>
+    </div>`;
+}
+
+// ============ INIT ============
+renderHero(); renderMoods(); renderTimeline();
+document.querySelector('.app-head').classList.add('over-map');
+setTimeout(()=>{ map.invalidateSize(); setMapMode('lugares'); }, 300);
+// Auto-request geolocation silently for distance display
+requestGeo(false);
+</script>
 </body>
 </html>
+
